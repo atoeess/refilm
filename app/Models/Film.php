@@ -20,7 +20,7 @@ class Film extends Model
         "slug"
     ];
 
-     public static function boot()
+    public static function boot()
     {
         parent::boot();
 
@@ -37,5 +37,10 @@ class Film extends Model
     public function negara()
     {
         return $this->belongsTo(Negara::class, 'id_negara');
+    }
+
+    public function highlights()
+    {
+        return $this->hasMany(Highlight::class, 'id_film');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Highlight;
+use App\Models\Film;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -13,18 +14,20 @@ class HighlightController extends Controller
      */
     public function index()
     {
-        $highlights = Highlight::all();
-
+        $highlights = Highlight::with('film')->get();
         return view('highlight.index', compact('highlights'));
     }
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        return view('highlight.create');
+        $films = Film::all();
+        return view('highlight.create', compact('films'));
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -32,16 +35,22 @@ class HighlightController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'thumbnail' => 'required',
+            'thumbnail' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'tagline' => 'nullable|string|max:255',
+            'id_film' => 'required|exists:film,id',
+            'kategori' => 'nullable|string|max:100',
         ]);
+
+        $path = $request->file('thumbnail')->store('thumbnails', 'public');
 
         Highlight::create([
-            'thumbnail' => $request->thumbnail,
-            'slug' => Str::slug($request->judul)
-
+            'thumbnail' => $path,
+            'tagline' => $request->tagline,
+            'id_film' => $request->id_film,
+            'kategori' => $request->kategori,
         ]);
 
-        return redirect()->route('Highlight.index')->with('success','Sukses menambahkan data Highlight');
+        return redirect()->route('highlight.index')->with('success', 'Highlight berhasil ditambahkan!');
     }
 
     /**
@@ -55,40 +64,53 @@ class HighlightController extends Controller
     // /**
     //  * Show the form for editing the specified resource.
     //  */
-    // public function edit(string $id)
-    // {
-    //     $genres = Genre::findOrFail($id);
-    //     return view('genre.edit', compact('genres'));
-    // }
+    public function edit($id)
+    {
+        $highlight = Highlight::findOrFail($id);
+        $films = Film::all();
+
+        return view('highlight.edit', compact('highlight', 'films'));
+    }
+
 
     /**
      * Update the specified resource in storage.
      */
-//    public function update(Request $request, string $id)
-//     {
-//         $request->validate([
-//             'nama_genre' => 'required',
-//         ]);
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'thumbnail' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'tagline' => 'required|string|max:255',
+            'id_film' => 'required|exists:film,id',
+            'kategori' => 'required|string|max:255',
+        ]);
 
-//         $genres = Genre::findOrFail($id);
+        $highlight = Highlight::findOrFail($id);
 
-//         $genres->update([
-//             'nama_genre' => $request->nama_genre,
-//             'slug' => Str::slug($request->nama_genre),
-//         ]);
+        // Kalau upload thumbnail baru
+        if ($request->hasFile('thumbnail')) {
+            $thumbnailName = time() . '.' . $request->thumbnail->extension();
+            $request->thumbnail->storeAs('public/thumbnails', $thumbnailName);
+            $highlight->thumbnail = $thumbnailName;
+        }
 
-//         return redirect()->route('genre.index')->with('success', 'Data genre berhasil diperbarui!');
-//     }
+        $highlight->tagline = $request->tagline;
+        $highlight->id_film = $request->id_film;
+        $highlight->kategori = $request->kategori;
+        $highlight->save();
+
+        return redirect()->route('highlight.index')->with('success', 'Highlight berhasil diperbarui!');
+    }
 
 
     /**
      * Remove the specified resource from storage.
      */
-    // public function destroy($id)
-    // {
-    //     $genres = Genre::findOrFail($id);
-    //     $genres->delete();
+    public function destroy($id)
+    {
+        $highlight = Highlight::findOrFail($id);
+        $highlight->delete();
 
-    //     return redirect()->route('genre.index')->with('success', 'Data genre berhasil dihapus');
-    // }
+        return redirect()->route('highlight.index')->with('success', 'Data highlight berhasil dihapus');
+    }
 }

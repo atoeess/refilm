@@ -1,52 +1,61 @@
 @extends('layouts.app')
 
 @section('content')
-    <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg ">
-    <div class="w-full px-6 py-6 mx-auto">
-        <div class="relative flex flex-col min-w-0 break-words bg-white border-0 shadow-xl rounded-2xl bg-clip-border">
-            <div class="p-6 pb-0 mb-0 border-b-0 border-b-solid border-gray-200 rounded-t-2xl">
-                <h6 class="text-lg font-bold text-slate-700">Tambah Highlight</h6>
-            </div>
-            <div class="flex-auto p-6">
-                <form action="{{ route('highlight.store') }}" method="POST">
-                    @csrf
+    <div class="container mt-5">
+        <h2 class="mb-4">Tambah Highlight Baru</h2>
 
-                    {{-- THUMBNAIL --}}
-                    <div class="mb-4">
-                        <label for="thumbnail" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700">Thumbnail</label>
-                        <input type="text" name="thumbnail" id="thumbnail"
-                            class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none"
-                            placeholder="Masukkan Nama genre">
-                    </div>
-                    <div class="mb-4">
-                        <label for="status" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700">Status</label>
-                        <input type="text" name="status" id="status"
-                            class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none"
-                            placeholder="Masukkan Nama genre">
-                    </div>
-                    <div class="mb-4">
-                        <label for="kategori_highlight" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700">Kategori</label>
-                        <input type="text" name="kategori_highlight" id="kategori_highlight"
-                            class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none"
-                            placeholder="Masukkan Nama genre">
-                    </div>
-                    <div class="mb-4">
-                        <label for="judul" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700">Judul film</label>
-                        <input type="text" name="judul" id="judul"
-                            class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none"
-                            placeholder="Masukkan Nama genre">
-                    </div>
-
-                    {{-- Tombol Simpan --}}
-                    <div class="flex justify-end mt-6">
-                        <button type="submit"
-                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all">
-                            Simpan
-                        </button>
-                    </div>
-                </form>
+        {{-- Notifikasi sukses / error --}}
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $err)
+                        <li>{{ $err }}</li>
+                    @endforeach
+                </ul>
             </div>
-        </div>
+        @endif
+
+        <form action="{{ route('highlight.store') }}" method="POST" enctype="multipart/form-data"
+            class="p-4 border rounded shadow-sm bg-light">
+            @csrf
+
+            {{-- Thumbnail --}}
+            <div class="mb-4">
+                <label for="thumbnail" class="form-label fw-bold">Thumbnail</label>
+                <input type="file" name="thumbnail" id="thumbnail" class="form-control" accept="image/*" required>
+            </div>
+
+            {{-- Tagline --}}
+            <div class="mb-4">
+                <label for="tagline" class="form-label fw-bold">Tagline</label>
+                <input type="text" name="tagline" id="tagline" class="form-control"
+                    placeholder="Masukkan tagline highlight">
+            </div>
+
+            {{-- Pilih Film --}}
+            <div class="mb-4">
+                <label for="id_film" class="form-label fw-bold">Pilih Film</label>
+                <select name="id_film" id="id_film" class="form-select" required>
+                    <option value="">-- Pilih Judul Film --</option>
+                    @foreach ($films as $film)
+                        <option value="{{ $film->id }}">{{ $film->judul }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Kategori --}}
+            <div class="mb-4">
+                <label for="kategori" class="form-label fw-bold">Kategori</label>
+                <input type="text" name="kategori" id="kategori" class="form-control"
+                    placeholder="Masukkan kategori highlight (misal: Trending, Terbaru, dll)">
+            </div>
+
+            {{-- Tombol Submit --}}
+            <button type="submit" class="btn btn-primary">Simpan</button>
+            <a href="{{ route('highlight.index') }}" class="btn btn-secondary">Kembali</a>
+        </form>
     </div>
-    </main>
 @endsection

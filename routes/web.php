@@ -29,12 +29,10 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 });
 
-Route::middleware(['auth'])->prefix('user')->group(function () {
-    Route::get('/film/{slug}', [UserFilmController::class, 'show'])->name('film.detail');
-    Route::get('/genre/{id}', [FilmController::class, 'showByGenre'])->name('genre.film');
-    Route::get('/negara/{id}', [FilmController::class, 'showByNegara'])->name('negara.film');
 
-});
+Route::get('/film/{slug}', [UserFilmController::class, 'show'])->name('film.detail');
+Route::get('/genre/{id}', [FilmController::class, 'showByGenre'])->name('genre.film');
+Route::get('/negara/{id}', [FilmController::class, 'showByNegara'])->name('negara.film');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::middleware(['auth'])->prefix('admin')->group(function () {
@@ -68,6 +66,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/highlight/{id}/edit', [HighlightController::class, 'edit'])->name('highlight.edit');
     Route::put('/highlight/{id}', [HighlightController::class, 'update'])->name('highlight.update');
     Route::delete('/highlight/{id}', [HighlightController::class, 'destroy'])->name('highlight.destroy');
+
 
     Route::resource('product', ProductController::class);
 

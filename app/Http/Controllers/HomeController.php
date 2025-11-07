@@ -20,7 +20,7 @@ class HomeController extends Controller
         $films = Film::all();
         $genres = Genre::all();
         $negaras = Negara::all();
-         $highlights = Highlight::with('film')->where('is_active', true)->get();
+        $highlights = Highlight::with('film')->get();
 
         return view('home', compact('films', 'genres', 'negaras', 'highlights'));
     }

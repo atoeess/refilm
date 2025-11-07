@@ -10,10 +10,11 @@
 
 </head>
 
-<body class="bg-black text-white font-sans">
+<body class="bg-[#ECECEC] text-whitw font-sans">
+
 
     <!-- Navbar -->
-    <nav class="flex items-center justify-between px-8 py-4 bg-black border-b border-blue-300">
+    <nav class="flex items-center justify-between px-8 py-4 bg-[#ECECEC] border-b border-blue-300">
         <div class="flex items-center space-x-8">
             <h1 class="text-3xl font-bold text-blue-300">ReFilm</h1>
         </div>
@@ -94,7 +95,7 @@
 
     <!-- Header -->
     <header class="px-8 py-10">
-        <h2 class="text-4xl font-bold mb-4 text-white">Rekomendasi Film</h2>
+        <h2 class="text-4xl font-bold mb-4 text-blue-300">Rekomendasi Film</h2>
         <div class="flex items-center border-b border-blue-300 pb-2 space-x-6 text-lg font-semibold">
             <button class="text-blue-300 hover:text-white">Semua</button>
             <button class="text-blue-300 hover:text-white">Film Populer</button>
@@ -107,11 +108,11 @@
 
         @forelse ($films as $film)
             <div
-                class="bg-gray-900 rounded-xl overflow-hidden shadow-lg hover:scale-105 transition-transform duration-300">
+                class="bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:scale-105 transition-transform duration-300">
                 <img src="{{ asset('storage/fotos/' . $film->foto) }}" alt="{{ $film->judul }}"
                     class="w-full h-64 object-cover">
                 <div class="p-4">
-                    <h3 class="text-xl font-semibold mb-1">{{ $film->judul }}</h3>
+                    <h3 class="text-xl text-white font-semibold mb-1">{{ $film->judul }}</h3>
                     <p class="text-gray-400 text-sm mb-3">
                         {{ Str::limit($film->deskripsi, 80) }}
                     </p>
