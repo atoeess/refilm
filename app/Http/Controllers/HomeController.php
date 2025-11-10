@@ -17,12 +17,12 @@ class HomeController extends Controller
     public function index()
     {
         // Ambil semua data film
-        $films = Film::all();
+        $film = Film::all();
         $genres = Genre::all();
         $negaras = Negara::all();
-        $highlights = Highlight::with('film')->get();
+         $highlights = Highlight::with('film')->latest()->get();
 
-        return view('home', compact('films', 'genres', 'negaras', 'highlights'));
+        return view('home', compact('film', 'genres', 'negaras', 'highlights'));
     }
     /**
      * Show the form for creating a new resource.

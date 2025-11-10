@@ -30,9 +30,14 @@ Route::middleware(['guest'])->group(function () {
 });
 
 
-Route::get('/film/{slug}', [UserFilmController::class, 'show'])->name('film.detail');
+Route::get('/film/{slug}', [FilmController::class, 'show'])->name('film.detail');
+
+Route::get('/search', [FilmController::class, 'search'])->name('film.search');
+
 Route::get('/genre/{id}', [FilmController::class, 'showByGenre'])->name('genre.film');
+
 Route::get('/negara/{id}', [FilmController::class, 'showByNegara'])->name('negara.film');
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::middleware(['auth'])->prefix('admin')->group(function () {
@@ -52,6 +57,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/film/{id}/edit', [FilmController::class, 'edit'])->name('film.edit');
     Route::put('/film/{id}', [FilmController::class, 'update'])->name('film.update');
     Route::delete('/film/{id}', [FilmController::class, 'destroy'])->name('film.destroy');
+    Route::get('/film/{id}', [FilmController::class, 'show'])->name('film.show');
+
 
     Route::get('/negara', [NegaraController::class, 'index'])->name('negara.index');
     Route::get('/negara/tambah-negara', [NegaraController::class, 'create'])->name('negara.create');

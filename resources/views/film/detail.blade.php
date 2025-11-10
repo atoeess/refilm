@@ -9,16 +9,18 @@
             <div class="col-md-8">
                 <h2>{{ $film->judul }}</h2>
                 <p>{{ $film->deskripsi }}</p>
-                <p> <strong>Tahun:</strong>
+
+                <p><strong>Genre:</strong>
                     @foreach ($film->genres as $genre)
-                        <span>{{ $genre->nama_genre }},</span>
+                        <span>{{ $genre->nama_genre }}@if (!$loop->last), @endif</span>
                     @endforeach
                 </p>
 
                 <p><strong>Tahun:</strong> {{ $film->tahun }}</p>
                 <p><strong>Negara:</strong> {{ $film->negara->nama_negara }}</p>
                 <p>{{ $film->sinopsis }}</p>
-                <a href="{{ $film->trailer }}" target="_blank" class="btn btn-primary">Tonton Trailer</a>
+
+                <a href="{{ $film->trailer }}" target="_blank" class="btn btn-primary">🎬 Tonton Trailer</a>
             </div>
         </div>
     </div>

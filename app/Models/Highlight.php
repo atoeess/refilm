@@ -9,19 +9,11 @@ class Highlight extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'id_highlight';
-
-
-    protected $fillable = [
-        'thumbnail',
-        'tagline',
-        'id_film',
-        'kategori',
-    ];
-
+    protected $fillable = ['id_film', 'thumbnail', 'tagline', 'kategori'];
 
     public function film()
     {
         return $this->belongsTo(Film::class, 'id_film');
     }
 }
+

@@ -80,10 +80,12 @@ class FilmController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($slug)
     {
-        //
+        $film = Film::with(['genres', 'negara'])->where('slug', $slug)->firstOrFail();
+        return view('film.detail', compact('film'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -164,4 +166,24 @@ class FilmController extends Controller
 
         return view('negara.index', compact('negara', 'films'));
     }
+
+
+   public function search(Request $request)
+{
+    $query = $request->input('q');
+
+    $film = Film::where('judul', 'like', "%$query%")
+        ->orWhere('deskripsi', 'like', "%$query%")
+        ->take(10)
+        ->get();
+
+    // Kalau request AJAX, kirim data JSON
+    if ($request->ajax()) {
+        return response()->json($film);
+    }
+
+    // Kalau bukan AJAX (fallback)
+    return view('search_result', compact('film', 'query'));
+}
+
 }

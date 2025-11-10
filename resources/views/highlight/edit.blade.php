@@ -13,7 +13,7 @@
                     </div>
                     <div class="card-body p-4">
 
-                        <form action="{{ route('highlight.update', $highlight->id) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('highlight.edit', $highlight->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 
