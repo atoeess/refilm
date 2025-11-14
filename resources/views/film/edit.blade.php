@@ -53,7 +53,7 @@
                             <div class="text-center">
                                 <p class="text-sm text-gray-500 mb-1">After</p>
                                 <img id="previewEdit" class="hidden w-40 h-56 object-cover rounded-lg border"
-                                    alt="Preview Baru">
+                                >
                             </div>
                         </div>
 

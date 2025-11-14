@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+
 class Film extends Model
 {
     protected $table = "film";
@@ -34,6 +35,7 @@ class Film extends Model
         return $this->belongsToMany(Genre::class, 'film_genre', 'id_film', 'id_genre');
     }
 
+
     public function negara()
     {
         return $this->belongsTo(Negara::class, 'id_negara');
@@ -43,4 +45,15 @@ class Film extends Model
     {
         return $this->hasMany(Highlight::class, 'id_film');
     }
+
+   public function ratings()
+{
+    return $this->hasMany(Rating::class, 'id_film');
+}
+
+public function averageRating()
+{
+    return $this->ratings()->avg('rating') ?? 0;
+}
+
 }

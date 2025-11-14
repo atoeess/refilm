@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FilmController;
@@ -7,43 +9,48 @@ use App\Http\Controllers\GenreController;
 use App\Http\Controllers\NegaraController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\UserFilmController;
 use App\Http\Controllers\HighlightController;
+use App\Http\Controllers\KomentarController;
 
-use Illuminate\Support\Facades\Route;
+// ----------------------------------------------------
+// 🔹 HALAMAN PUBLIK
+// ----------------------------------------------------
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/film/{slug}', [FilmController::class, 'show'])->name('film.detail');
+Route::get('/search', [FilmController::class, 'search'])->name('film.search');
+Route::get('/genre/{id}', [FilmController::class, 'showByGenre'])->name('genre.film');
+Route::get('/negara/{id}', [FilmController::class, 'showByNegara'])->name('negara.film');
+Route::post('/film/rating', [FilmController::class, 'rating'])->name('film.rating');
 
-Route::get('/', function () {
-    return view('home');
-});
-
-
-//route resource for products
-
-
-Route::middleware(['guest'])->group(function () {
+// ----------------------------------------------------
+// 🔹 AUTH (Hanya untuk tamu yang belum login)
+// ----------------------------------------------------
+Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-});
-Route::middleware(['guest'])->group(function () {
+
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::post('post-komen', [KomentarController::class, 'store'])->name('komen.post');
+});
 
-Route::get('/film/{slug}', [FilmController::class, 'show'])->name('film.detail');
+// ----------------------------------------------------
+// 🔹 LOGOUT (Bisa diakses hanya jika login)
+// ----------------------------------------------------
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/search', [FilmController::class, 'search'])->name('film.search');
+// ----------------------------------------------------
+// 🔹 ADMIN (auth + is_admin middleware)
+// ----------------------------------------------------
+Route::middleware(['auth', 'is_admin'])->prefix('admin')->group(function () {
 
-Route::get('/genre/{id}', [FilmController::class, 'showByGenre'])->name('genre.film');
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::get('/negara/{id}', [FilmController::class, 'showByNegara'])->name('negara.film');
-
-Route::get('/', [HomeController::class, 'index'])->name('home');
-
-Route::middleware(['auth'])->prefix('admin')->group(function () {
-
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
+    // Genre
     Route::get('/genre', [GenreController::class, 'index'])->name('genre.index');
     Route::get('/genre/tambah-genre', [GenreController::class, 'create'])->name('genre.create');
     Route::post('/genre/store-genre', [GenreController::class, 'store'])->name('genre.store');
@@ -51,6 +58,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::put('/genre/{id}', [GenreController::class, 'update'])->name('genre.update');
     Route::delete('/genre/{id}', [GenreController::class, 'destroy'])->name('genre.destroy');
 
+    // Film
     Route::get('/film', [FilmController::class, 'index'])->name('film.index');
     Route::get('/film/create', [FilmController::class, 'create'])->name('film.create');
     Route::post('/film/store', [FilmController::class, 'store'])->name('film.store');
@@ -59,7 +67,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::delete('/film/{id}', [FilmController::class, 'destroy'])->name('film.destroy');
     Route::get('/film/{id}', [FilmController::class, 'show'])->name('film.show');
 
-
+    // Negara
     Route::get('/negara', [NegaraController::class, 'index'])->name('negara.index');
     Route::get('/negara/tambah-negara', [NegaraController::class, 'create'])->name('negara.create');
     Route::post('/negara/store-negara', [NegaraController::class, 'store'])->name('negara.store');
@@ -67,6 +75,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::put('/negara/{id}', [NegaraController::class, 'update'])->name('negara.update');
     Route::delete('/negara/{id}', [NegaraController::class, 'destroy'])->name('negara.destroy');
 
+    // Highlight
     Route::get('/highlight', [HighlightController::class, 'index'])->name('highlight.index');
     Route::get('/highlight/create', [HighlightController::class, 'create'])->name('highlight.create');
     Route::post('/highlight/store', [HighlightController::class, 'store'])->name('highlight.store');
@@ -74,12 +83,12 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::put('/highlight/{id}', [HighlightController::class, 'update'])->name('highlight.update');
     Route::delete('/highlight/{id}', [HighlightController::class, 'destroy'])->name('highlight.destroy');
 
-
+    // Produk
     Route::resource('product', ProductController::class);
 
+    // Route::get('/403', function () {
+    //     return view('errors.403');
+    // })->name('errors.403');
 
-    Route::post('/logout', function () {
-        // Auth::logout();
-        return redirect('/login');
-    })->name('logout');
+    // ak@mbleyer.com
 });

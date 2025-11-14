@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Film;
 use App\Models\Genre;
+use App\Models\Komentar;
 use App\Models\Negara;
+use App\Models\Rating;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -83,7 +86,9 @@ class FilmController extends Controller
     public function show($slug)
     {
         $film = Film::with(['genres', 'negara'])->where('slug', $slug)->firstOrFail();
-        return view('film.detail', compact('film'));
+        $komentars = Komentar::with('user')->where('id_film', $film->id)->get();
+
+        return view('film.detail', compact('film', 'komentars'));
     }
 
 
@@ -112,6 +117,7 @@ class FilmController extends Controller
         $film = Film::findOrFail($id);
 
         $request->validate([
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'judul' => 'required',
             'deskripsi' => 'required',
             'tahun' => 'required',
@@ -120,6 +126,16 @@ class FilmController extends Controller
             'sinopsis' => 'nullable',
             'trailer' => 'nullable',
         ]);
+
+        if ($request->hasFile('foto')) {
+            if ($film->foto && Storage::exists('public/fotos/' . $film->foto)) {
+                Storage::delete('public/fotos/' . $film->foto);
+            }
+
+            $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
+            $request->file('foto')->storeAs('public/fotos', $filename);
+            $film->foto = $filename;
+        }
 
         // Update field biasa
         $film->judul = $request->judul;
@@ -168,22 +184,41 @@ class FilmController extends Controller
     }
 
 
-   public function search(Request $request)
-{
-    $query = $request->input('q');
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
 
-    $film = Film::where('judul', 'like', "%$query%")
-        ->orWhere('deskripsi', 'like', "%$query%")
-        ->take(10)
-        ->get();
+        // cari semua film yang judulnya mengandung keyword + load relasi genre & negara
+        $films = \App\Models\Film::with(['genres', 'negara'])
+            ->where('judul', 'like', "%{$query}%")
+            ->get();
 
-    // Kalau request AJAX, kirim data JSON
-    if ($request->ajax()) {
-        return response()->json($film);
+        return view('film.search', compact('films', 'query'));
     }
 
-    // Kalau bukan AJAX (fallback)
-    return view('search_result', compact('film', 'query'));
+
+    public function rating(Request $request)
+{
+    $request->validate([
+        'film_id' => 'required',
+        'rating' => 'required|integer|min:1|max:5',
+    ]);
+
+    Rating::updateOrCreate(
+        [
+            'id_user' => auth()->id(),
+            'id_film' => $request->film_id,
+        ],
+        [
+            'rating' => $request->rating,
+        ]
+    );
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Rating berhasil disimpan',
+        'average' => Rating::where('id_film', $request->film_id)->avg('nilai_rating')
+    ]);
 }
 
 }

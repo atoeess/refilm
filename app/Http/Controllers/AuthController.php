@@ -4,86 +4,84 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class AuthController extends Controller
 {
-    // 🔹 Tampilkan halaman login
+    /**
+     * Tampilkan halaman login
+     */
     public function showLogin()
     {
-        return view('Auth.login');
+        return view('auth.login');
     }
 
-    // 🔹 Proses login
+    /**
+     * Proses login
+     */
     public function login(Request $request)
     {
-        try {
-            // Validasi input
-            $credentials = $request->validate([
-                'email' => ['required', 'email'],
-                'password' => ['required'],
-            ]);
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-            // Pastikan email & password adalah string, bukan array
-            $email = is_array($credentials['email']) ? $credentials['email'][0] : $credentials['email'];
-            $password = is_array($credentials['password']) ? $credentials['password'][0] : $credentials['password'];
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
 
-            // Cek apakah akun ada di database
-            $isExists = User::where('email', $email)->exists();
-            if (!$isExists) {
-                return back()->with('error', 'Akun anda belum terdaftar.');
+            // Jika admin
+            if (Auth::user()->role === 'admin') {
+                return redirect()->route('dashboard')->with('success', 'Selamat datang, Admin!');
             }
 
-            // Coba login
-            if (Auth::attempt(['email' => $email, 'password' => $password])) {
-                $request->session()->regenerate();
-                return redirect('/admin/dashboard');
-                // return redirect()->route('wel');
-            }
-
-            // Jika password salah
-            return back()->with('error', 'Email atau password salah.');
-
-        } catch (\Exception $e) {
-            // Tangani error agar bisa dilihat di browser
-            return back()->with('error', $e->getMessage());
+            // Jika user biasa
+            return redirect()->route('home')->with('success', 'Login berhasil!');
         }
+
+        return back()->with('error', 'Email atau password salah.');
     }
 
-    // 🔹 Tampilkan halaman register
-    // public function showRegister()
-    // {
-    //     return view('auth.register');
-    // }
+    /**
+     * Tampilkan halaman register
+     */
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
 
-    // 🔹 (Opsional) Proses register
-    // public function register(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'name' => ['required', 'string', 'max:255'],
-    //         'email' => ['required', 'email', 'unique:users,email'],
-    //         'password' => ['required', 'min:6', 'confirmed'],
-    //     ]);
+    /**
+     * Proses register
+     */
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'min:6', 'confirmed'],
+        ]);
 
-    //     $user = User::create([
-    //         'name' => $validated['name'],
-    //         'email' => $validated['email'],
-    //         'password' => bcrypt($validated['password']),
-    //     ]);
+        // Simpan user baru
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'guest', // default user biasa
+        ]);
 
-    //     Auth::login($user);
+        Auth::login($user);
+        return redirect()->route('login')->with('success', 'Registrasi berhasil! Selamat datang.');
+    }
 
-    //     return redirect()->route('dashboard');
-    // }
-
-
-    public function logout($request)
+    /**
+     * Logout
+     */
+    public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
-
+        return redirect()->route('home')->with('success', 'Anda telah logout.');
     }
 }

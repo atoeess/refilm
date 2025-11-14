@@ -14,18 +14,22 @@ return new class extends Migration
         Schema::create('film', function (Blueprint $table) {
             $table->id();
             $table->string('foto')->nullable();
-
             $table->string('judul');
             $table->string('deskripsi')->nullable();
             $table->integer('tahun')->nullable();
 
             $table->foreignId('id_negara')
-                ->references('id')
-                ->on('negara')
+                ->constrained('negara')
                 ->onDelete('cascade');
 
+            // 👇 diubah: boleh NULL biar gak error saat insert tanpa genre
+            $table->foreignId('genre_id')
+                ->nullable()
+                ->constrained('genres')
+                ->onDelete('set null');
+
             $table->text('sinopsis')->nullable();
-            $table->string('trailer')->nullable(); // bisa untuk link YouTube misalnya
+            $table->string('trailer')->nullable();
             $table->string('slug')->unique();
             $table->timestamps();
         });
