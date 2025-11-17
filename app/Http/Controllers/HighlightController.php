@@ -113,4 +113,6 @@ class HighlightController extends Controller
 
         return redirect()->route('highlight.index')->with('success', 'Data highlight berhasil dihapus');
     }
+
+    
 }

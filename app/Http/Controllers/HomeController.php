@@ -16,14 +16,54 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // Ambil semua data film
-        $film = Film::all();
-        $genres = Genre::all();
-        $negaras = Negara::all();
-        $highlights = Highlight::with('film')->latest()->get();
+        return view('home', [
+            'genres' => Genre::all(),
+            'negaras' => Negara::all(),
+            'highlights' => Highlight::with('film')->latest()->get(),
 
-        return view('home', compact('film', 'genres', 'negaras', 'highlights'));
+            // Film untuk grid biasa
+            'film' => Film::select('id', 'judul', 'slug', 'foto', 'deskripsi')->get(),
+
+            // Film untuk tab "Semua"
+            'films' => Film::select('id', 'judul', 'slug', 'foto', 'deskripsi')->get(),
+
+            // Film untuk tab "Populer"
+            'filmsPopuler' => Film::withCount('ratings')
+                ->orderBy('ratings_count', 'desc')
+                ->get(),
+
+            // Film untuk tab "Baru" — sort dari tahun terbaru
+            'filmsBaru' => Film::orderBy('tahun', 'desc')->get(),
+        ]);
     }
+
+
+
+    public function rekomendasi(Request $request)
+    {
+        $tab = $request->query('tab', 'semua');
+
+        if ($tab === 'populer') {
+            $films = Film::withCount('ratings')
+                ->orderBy('ratings_count', 'desc')
+                ->paginate(12);
+        } elseif ($tab === 'baru') {
+            $films = Film::orderBy('tanggal_rilis', 'desc')->paginate(12);
+        } else {
+            $films = Film::paginate(12);
+        }
+
+        return view('rekomendasi', [
+            'films' => $films,
+            'tab' => $tab
+        ]);
+    }
+
+
+
+
+
+
     /**
      * Show the form for creating a new resource.
      */

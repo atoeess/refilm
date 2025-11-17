@@ -7,36 +7,35 @@ use App\Models\Genre;
 use App\Models\Komentar;
 use App\Models\Negara;
 use App\Models\Rating;
+use App\Models\Highlight;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-
 class FilmController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * LIST FILM
      */
     public function index()
     {
         $films = Film::with(['genres', 'negara'])->paginate(10);
-
         return view('film.index', compact('films'));
     }
 
-
     /**
-     * Show the form for creating a new resource.
+     * FORM CREATE
      */
     public function create()
     {
-        $genres = Genre::all();
+        $genres  = Genre::all();
         $negaras = Negara::all();
+
         return view('film.create', compact('genres', 'negaras'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * SIMPAN FILM BARU
      */
     public function store(Request $request)
     {
@@ -51,68 +50,68 @@ class FilmController extends Controller
             'trailer' => 'required',
         ]);
 
-        $filename = null;
-
+        // upload foto
+        $fotoPath = null;
         if ($request->hasFile('foto')) {
-            $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
-            $request->file('foto')->storeAs('public/fotos', $filename);
+            $filename = time() . '_' . $request->foto->getClientOriginalName();
+            $request->foto->storeAs('public/fotos', $filename);
             $fotoPath = $filename;
-        } else {
-            $fotoPath = null;
         }
 
-        // Simpan data film
+        // simpan film
         $film = Film::create([
-            'foto' => $fotoPath ?? null, // simpan nama file, bukan path sementara
-            'judul' => $request->judul,
+            'foto'      => $fotoPath,
+            'judul'     => $request->judul,
             'deskripsi' => $request->deskripsi,
-            'tahun' => $request->tahun,
+            'tahun'     => $request->tahun,
             'id_negara' => $request->negara,
-            'sinopsis' => $request->sinopsis,
-            'trailer' => $request->trailer,
-            'slug' => Str::slug($request->judul),
+            'sinopsis'  => $request->sinopsis,
+            'trailer'   => $request->trailer,
+            'slug'      => Str::slug($request->judul),
         ]);
 
-        // Simpan relasi genre
+        // relasi genre
         $film->genres()->attach($request->genre);
 
-        return redirect()->route('film.index')->with('success', 'Sukses menambahkan data film');
+        return redirect()->route('film.index')
+            ->with('success', 'Sukses menambahkan data film');
     }
 
-
     /**
-     * Display the specified resource.
+     * DETAIL FILM
      */
     public function show($slug)
     {
-        $film = Film::with(['genres', 'negara'])->where('slug', $slug)->firstOrFail();
-        $komentars = Komentar::with('user')->where('id_film', $film->id)->get();
+        $film = Film::with(['genres', 'negara'])
+            ->where('slug', $slug)
+            ->firstOrFail();
 
-        return view('film.detail', compact('film', 'komentars'));
+        $komentars = Komentar::with('user')
+            ->where('id_film', $film->id)
+            ->latest()
+            ->get();
+
+        $highlights = Highlight::where('id_film', $film->id)->get();
+
+        return view('film.detail', compact('film', 'komentars', 'highlights'));
     }
 
-
     /**
-     * Show the form for editing the specified resource.
+     * FORM EDIT
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        $films = Film::findOrFail($id);
-
-        // Ambil film beserta genre yang sudah terkait
-        $films = Film::with('genres')->findOrFail($id);
-        $films = Film::with('negara')->findOrFail($id);
-
-
-        $genres = Genre::all();
+        $film    = Film::with(['genres', 'negara'])->findOrFail($id);
+        $genres  = Genre::all();
         $negaras = Negara::all();
-        return view('film.edit', compact('films', 'genres', 'negaras'));
+
+        return view('film.edit', compact('film', 'genres', 'negaras'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * UPDATE FILM
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $film = Film::findOrFail($id);
 
@@ -121,104 +120,124 @@ class FilmController extends Controller
             'judul' => 'required',
             'deskripsi' => 'required',
             'tahun' => 'required',
-            'genre' => 'required|array',
+            'genre' => 'required|array|exists:genres,id',
             'negara' => 'required',
             'sinopsis' => 'nullable',
             'trailer' => 'nullable',
         ]);
 
+        // handle foto
         if ($request->hasFile('foto')) {
             if ($film->foto && Storage::exists('public/fotos/' . $film->foto)) {
                 Storage::delete('public/fotos/' . $film->foto);
             }
 
-            $filename = time() . '_' . $request->file('foto')->getClientOriginalName();
-            $request->file('foto')->storeAs('public/fotos', $filename);
+            $filename = time() . '_' . $request->foto->getClientOriginalName();
+            $request->foto->storeAs('public/fotos', $filename);
             $film->foto = $filename;
         }
 
-        // Update field biasa
-        $film->judul = $request->judul;
-        $film->deskripsi = $request->deskripsi;
-        $film->tahun = $request->tahun;
-        $film->sinopsis = $request->sinopsis;
-        $film->trailer = $request->trailer;
-        $film->id_negara = $request->negara;
-        $film->save();
+        // update data
+        $film->update([
+            'judul'     => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'tahun'     => $request->tahun,
+            'sinopsis'  => $request->sinopsis,
+            'trailer'   => $request->trailer,
+            'id_negara' => $request->negara,
+        ]);
 
-        // Update relasi many-to-many (film_genre)
+        // sync relasi genre
         $film->genres()->sync($request->genre);
 
-        return redirect()->route('film.index')->with('success', 'Data film berhasil diupdate!');
+        return redirect()->route('film.index')
+            ->with('success', 'Data film berhasil diupdate!');
     }
 
-
-
     /**
-     * Remove the specified resource from storage.
+     * HAPUS FILM
      */
     public function destroy($id)
     {
-        $films = Film::findOrFail($id);
-        $films->delete();
+        $film = Film::findOrFail($id);
 
-        return redirect()->route('film.index')->with('success', 'Data film berhasil dihapus');
+        if ($film->foto && Storage::exists('public/fotos/' . $film->foto)) {
+            Storage::delete('public/fotos/' . $film->foto);
+        }
+
+        $film->delete();
+
+        return redirect()->route('film.index')
+            ->with('success', 'Data film berhasil dihapus');
     }
 
-
-    public function showByGenre($id)
-    {
-        $genre = Genre::findOrFail($id);
-        $films = Film::where('genre_id', $id)->get();
-
-        return view('genre.index', compact('genre', 'films'));
-    }
-
-
-    public function showByNegara($id)
-    {
-        $genre = Negara::findOrFail($id);
-        $films = Film::where('negara_id', $id)->get();
-
-        return view('negara.index', compact('negara', 'films'));
-    }
-
-
+    /**
+     * SEARCH
+     */
     public function search(Request $request)
     {
-        $query = $request->input('q');
+        $query = $request->q;
 
-        // cari semua film yang judulnya mengandung keyword + load relasi genre & negara
-        $films = \App\Models\Film::with(['genres', 'negara'])
+        $films = Film::with(['genres', 'negara'])
             ->where('judul', 'like', "%{$query}%")
             ->get();
 
         return view('film.search', compact('films', 'query'));
     }
 
-
+    /**
+     * RATING FILM
+     */
     public function rating(Request $request)
-{
-    $request->validate([
-        'film_id' => 'required',
-        'rating' => 'required|integer|min:1|max:5',
-    ]);
+    {
+        $request->validate([
+            'film_id' => 'required',
+            'rating' => 'required|integer|min:1|max:5',
+        ]);
 
-    Rating::updateOrCreate(
-        [
-            'id_user' => auth()->id(),
-            'id_film' => $request->film_id,
-        ],
-        [
-            'rating' => $request->rating,
-        ]
-    );
+        Rating::updateOrCreate(
+            [
+                'id_user' => auth()->id(),
+                'id_film' => $request->film_id,
+            ],
+            [
+                'nilai_rating' => $request->rating,
+            ]
+        );
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Rating berhasil disimpan',
-        'average' => Rating::where('id_film', $request->film_id)->avg('nilai_rating')
-    ]);
-}
+        return response()->json([
+            'success' => true,
+            'message' => 'Rating berhasil disimpan',
+            'average' => Rating::where('id_film', $request->film_id)->avg('nilai_rating'),
+        ]);
+    }
 
+
+    public function byGenre($id)
+    {
+        $genre = Genre::findOrFail($id);
+
+        // Ambil semua film yang punya genre ini
+        $films = Film::whereHas('genres', function ($q) use ($id) {
+            $q->where('genres.id', $id);
+        })->paginate(12);
+
+        $genres = Genre::all();
+        $negaras = Negara::all();
+
+        return view('film.genre', compact('films', 'genre', 'genres', 'negaras'));
+    }
+
+
+    public function byNegara($id)
+    {
+        $negara = Negara::findOrFail($id);
+
+        $films = Film::where('id_negara', $id)->paginate(12);
+
+        $genres = Genre::all();
+        $negaras = Negara::all();
+
+        return view('film.negara', compact('films', 'negara', 'genres', 'negaras'));
+    }
 }

@@ -46,14 +46,13 @@ class Film extends Model
         return $this->hasMany(Highlight::class, 'id_film');
     }
 
-   public function ratings()
-{
-    return $this->hasMany(Rating::class, 'id_film');
-}
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class, 'id_film');
+    }
 
-public function averageRating()
-{
-    return $this->ratings()->avg('rating') ?? 0;
-}
-
+    public function averageRating()
+    {
+        return $this->ratings()->avg('nilai_rating') ?? 0;
+    }
 }

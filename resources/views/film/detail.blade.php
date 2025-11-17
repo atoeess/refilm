@@ -43,14 +43,20 @@
 
                 {{-- Rating Static (atas) --}}
                 <div class="flex gap-3 items-center">
+                    @php
+                        $rating = $film->rating ?? 0;
+                    @endphp
+
                     @for ($i = 0; $i < 5; $i++)
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                            viewBox="0 0 24 24">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                             <path fill="#fffe3b"
                                 d="m12 2l2.582 6.953L22 9.257l-5.822 4.602L18.18 21L12 16.891L5.82 21l2.002-7.141L2 9.257l7.418-.304z" />
                         </svg>
                     @endfor
-                    <span>(4.5)</span>
+
+                    <span class="text-yellow-400 text-xs ml-1 font-semibold">
+                        ({{ number_format($rating, 1) }})
+                    </span>
                 </div>
 
                 {{-- Popup Trailer --}}
@@ -66,7 +72,8 @@
                     <template x-if="trailerOpen">
                         <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50" x-transition>
 
-                            <div class="bg-[#1a1a1a] rounded-lg overflow-hidden w-[90%] md:w-[60%] lg:w-[50%] relative shadow-xl">
+                            <div
+                                class="bg-[#1a1a1a] rounded-lg overflow-hidden w-[90%] md:w-[60%] lg:w-[50%] relative shadow-xl">
 
                                 <button @click="trailerOpen = false"
                                     class="absolute top-2 right-2 text-gray-300 hover:text-white text-2xl font-bold">
@@ -101,21 +108,21 @@
         <div class="pt-5">
             <input type="hidden" id="filmId" value="{{ $film->id }}">
 
-            <div class="flex gap-3 items-center mb-3">
-                @for ($i = 0; $i < 5; $i++)
-                    <button class="stars" type="button" data-id="{{ $i + 1 }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                            viewBox="0 0 24 24">
+            <div class="flex gap-2">
+                @for ($i = 1; $i <= 5; $i++)
+                    <button class="stars" data-star="{{ $i }}">
+                        <svg width="26" height="26">
                             <path fill="#fff"
-                                d="m12 6.308l1.176 3.167l.347.936l.997.041l3.374.139l-2.647 2.092l-.784.62l.27.962l.911 3.249l-2.814-1.871l-.83-.553l-.83.552l-2.814 1.871l.911-3.249l.27-.962l-.784-.62l-2.648-2.092l3.374-.139l.997-.41zM12 2L9.418 8.953L2 9.257l5.822 4.602L5.82 21L12 16.891L18.18 21l-2.002-7.141L22 9.257l-7.418-.305z" />
+                                d="m12 2l2.582 6.953L22 9.257l-5.822 4.602L18.18 21L12 16.891L5.82 21l2.002-7.141L2 9.257l7.418-.304z" />
                         </svg>
                     </button>
                 @endfor
-
-                <span class="text-gray-300 ml-2">
-                    ({{ number_format($film->averageRating(), 1) }})
-                </span>
             </div>
+
+            <span id="avg-rating">
+                ({{ number_format($film->averageRating(), 1) }})
+            </span>
+
 
             {{-- Komentar Form --}}
             <div class="mt-8">
@@ -189,38 +196,36 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const starsButtons = document.querySelectorAll('.stars');
+            const stars = document.querySelectorAll('.stars');
+            const avgText = document.getElementById('avg-rating');
 
-            starsButtons.forEach((el) => {
-                el.addEventListener('click', () => {
+            stars.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const rating = this.dataset.star;
 
-                    const index = parseInt(el.dataset.id) - 1;
-                    let allActive = true;
+                    // tampilan bintang
+                    stars.forEach(s => {
+                        const val = s.dataset.star;
+                        s.querySelector('path').setAttribute('fill', val <= rating ?
+                            '#fffe3b' : '#fff');
+                    });
 
-                    for (let i = 0; i <= index; i++) {
-                        if (starsButtons[i].dataset.active !== "true") {
-                            allActive = false;
-                            break;
-                        }
-                    }
-
-                    if (allActive) {
-                        for (let i = 0; i <= index; i++) {
-                            starsButtons[i].dataset.active = "false";
-                            starsButtons[i].querySelector('svg path').setAttribute('fill', '#fff');
-                        }
-                    } else {
-                        starsButtons.forEach(s => {
-                            s.dataset.active = "false";
-                            s.querySelector('svg path').setAttribute('fill', '#fff');
+                    // kirim ke database
+                    fetch("{{ route('rating.store') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify({
+                                id_film: {{ $film->id }},
+                                nilai_rating: rating
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            avgText.innerText = `(${data.average.toFixed(1)})`;
                         });
-
-                        for (let i = 0; i <= index; i++) {
-                            starsButtons[i].dataset.active = "true";
-                            starsButtons[i].querySelector('svg path').setAttribute('fill', '#fffe3b');
-                        }
-                    }
-
                 });
             });
         });

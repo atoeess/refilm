@@ -12,24 +12,13 @@ class Rating extends Model
         'nilai_rating'
     ];
 
-    public function films()
+    public function film()
     {
-        return $this->belongsToMany(Film::class, 'id_film');
+        return $this->belongsTo(Film::class, 'id_film');
     }
 
     public function user()
     {
-        return $this->belongsToMany(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'id_user');
     }
-
-    public function ratings()
-{
-    return $this->hasMany(Rating::class);
-}
-
-public function averageRating()
-{
-    return $this->ratings()->avg('rating') ?? 0;
-}
-
 }

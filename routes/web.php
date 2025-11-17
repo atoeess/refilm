@@ -8,6 +8,7 @@ use App\Http\Controllers\FilmController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\NegaraController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HighlightController;
 use App\Http\Controllers\KomentarController;
@@ -21,6 +22,14 @@ Route::get('/search', [FilmController::class, 'search'])->name('film.search');
 Route::get('/genre/{id}', [FilmController::class, 'showByGenre'])->name('genre.film');
 Route::get('/negara/{id}', [FilmController::class, 'showByNegara'])->name('negara.film');
 Route::post('/film/rating', [FilmController::class, 'rating'])->name('film.rating');
+Route::get('/genre/{id}', [FilmController::class, 'byGenre'])->name('genre.film');
+Route::get('/negara/{id}', [FilmController::class, 'bynegara'])->name('negara.film');
+Route::post('/rating', [RatingController::class, 'store'])->name('rating.store');
+Route::get('/rekomendasi', [HomeController::class, 'rekomendasi'])->name('rekomendasi');
+
+
+
+
 
 // ----------------------------------------------------
 // 🔹 AUTH (Hanya untuk tamu yang belum login)

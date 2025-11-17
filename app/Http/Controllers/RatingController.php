@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Rating;
 use Illuminate\Http\Request;
 
 class RatingController extends Controller
@@ -27,8 +28,22 @@ class RatingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rating = Rating::updateOrCreate(
+            [
+                'id_user' => Auth::id(),
+                'id_film' => $request->id_film,
+            ],
+            [
+                'nilai_rating' => $request->nilai_rating
+            ]
+        );
+
+        return response()->json([
+            'success'  => true,
+            'average'  => $rating->film->averageRating()
+        ]);
     }
+
 
     /**
      * Display the specified resource.

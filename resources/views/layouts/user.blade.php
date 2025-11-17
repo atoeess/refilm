@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,6 +45,7 @@
 
     @stack('styles')
 </head>
+
 <body class="relative min-h-screen flex flex-col">
 
     {{-- Background --}}
@@ -58,12 +60,16 @@
             🎬 ReFilm
         </a>
 
-        <div class="flex gap-6">
-            <a href="{{ route('home') }}" class="nav-link">Beranda</a>
-            <a href="{{ route('film.index') }}" class="nav-link">Film</a>
-            <a href="{{ route('genre.index') }}" class="nav-link">Genre</a>
-            <a href="{{ route('negara.index') }}" class="nav-link">Negara</a>
-        </div>
+        <a href="{{ route('home') }}"
+            class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Kembali
+        </a>
+
+
     </nav>
 
     {{-- Main content --}}
@@ -78,4 +84,5 @@
 
     @stack('scripts')
 </body>
+
 </html>

@@ -72,6 +72,7 @@
                 </div>
             </div>
 
+
             {{-- 🔹 Login / Logout --}}
             @guest
                 <a href="{{ route('login') }}"
@@ -131,7 +132,7 @@
                             class="flex-shrink-0 w-32 h-18 rounded-md overflow-hidden cursor-pointer border-4 transition-all duration-300"
                             :class="current === {{ $i }} ? 'border-blue-400' : 'border-transparent'">
 
-                            <img src="{{ $h->thumbnail_url }}" class="w-full h-full object-cover">
+                            <img src="{{ asset('storage/' . $h->thumbnail) }}" class="w-full h-full object-cover">
                         </div>
                     @endforeach
 
@@ -147,92 +148,98 @@
 
 
 
-    {{-- 🔹 Header --}}
-    <header class="px-8 py-10" x-data="{ tab: 'semua' }">
+    <div x-data="{
+        tab: 'semua',
+        semua: @js($films),
+        populer: @js($filmsPopuler),
+        baru: @js($filmsBaru),
+    }" class="px-8 py-10">
+
+        <!-- HEADER -->
         <h2 class="text-4xl font-bold mb-4 text-blue-400">Rekomendasi Film</h2>
+
         <div class="flex items-center border-b border-gray-700 pb-2 space-x-6 text-lg font-semibold">
+
             <button @click="tab = 'semua'"
-                :class="tab === 'semua' ? 'text-white border-b-2 border-blue-400' : 'text-blue-300 hover:text-white'">Semua</button>
+                :class="tab === 'semua' ? 'text-white border-b-2 border-blue-400' : 'text-blue-300 hover:text-white'">
+                Semua
+            </button>
+
             <button @click="tab = 'populer'"
-                :class="tab === 'populer' ? 'text-white border-b-2 border-blue-400' : 'text-blue-300 hover:text-white'">Film
-                Populer</button>
+                :class="tab === 'populer' ? 'text-white border-b-2 border-blue-400' : 'text-blue-300 hover:text-white'">
+                Film Populer
+            </button>
+
             <button @click="tab = 'baru'"
-                :class="tab === 'baru' ? 'text-white border-b-2 border-blue-400' : 'text-blue-300 hover:text-white'">Baru
-                Rilis</button>
+                :class="tab === 'baru' ? 'text-white border-b-2 border-blue-400' : 'text-blue-300 hover:text-white'">
+                Baru Rilis
+            </button>
+
         </div>
-    </header>
 
-    {{-- 🔹 Film Cards --}}
-    <section class="px-4 py-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-        @forelse ($film as $item)
-            <div
-                class="bg-[#1a1a1a] rounded-lg overflow-hidden shadow-md hover:scale-105 transition-transform duration-300 relative w-full">
+        <!-- LIST FILM -->
+        <section class="px-4 py-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
 
-                {{-- FOTO + RATING --}}
-                <div class="relative">
-                    <img src="{{ asset('storage/fotos/' . $item->foto) }}" alt="{{ $item->judul }}"
-                        class="w-full h-44 object-cover">
+            <template x-for="item in (tab === 'semua' ? semua : tab === 'populer' ? populer : baru)"
+                :key="item.id">
 
-                    {{-- ⭐ Rating di pojok kiri bawah Foto --}}
-                    @php
-                        $rating = 4.5;
-                        $fullStars = floor($rating);
-                        $halfStar = $rating - $fullStars >= 0.5;
-                    @endphp
+                <div class="bg-[#1a1a1a] rounded-lg overflow-hidden shadow-md hover:scale-105 transition w-full">
 
-                    <div
-                        class="absolute bottom-1 left-1 bg-black/60 px-2 py-1 rounded-md flex items-center space-x-1 backdrop-blur-sm">
+                    <div class="relative">
 
-                        {{-- Bintang penuh --}}
-                        @for ($i = 0; $i < $fullStars; $i++)
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="#facc15" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="#facc15" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M11.48 3.5l2.31 4.68 5.18.75-3.75 3.65.89 5.19L11.5 15.9l-4.61 2.42.88-5.19-3.75-3.65 5.19-.75 2.27-4.63z" />
-                            </svg>
-                        @endfor
+                        <img :src="'/storage/fotos/' + item.foto" class="w-full h-44 object-cover">
 
-                        {{-- Bintang setengah --}}
-                        @if ($halfStar)
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="url(#half)"
-                                stroke="#facc15" stroke-width="1.5" class="w-4 h-4">
-                                <defs>
-                                    <linearGradient id="half">
-                                        <stop offset="50%" stop-color="#facc15" />
-                                        <stop offset="50%" stop-color="transparent" />
-                                    </linearGradient>
-                                </defs>
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M11.48 3.5l2.31 4.68 5.18.75-3.75 3.65.89 5.19L11.5 15.9l-4.61 2.42.88-5.19-3.75-3.65 5.19-.75 2.27-4.63z" />
-                            </svg>
-                        @endif
+                        <div
+                            class="absolute bottom-1 left-1 bg-black/60 px-2 py-1 rounded-md flex items-center space-x-1 backdrop-blur-sm">
 
-                        <span class="text-yellow-400 text-xs ml-1 font-semibold">
-                            ({{ number_format($rating, 1) }})
-                        </span>
+                            <template x-for="i in Math.floor(item.ratings_avg_nilai_rating ?? 0)">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill='#facc15' viewBox='0 0 24 24'
+                                    stroke-width='1.5' stroke='#facc15' class='w-4 h-4'>
+                                    <path stroke-linecap='round' stroke-linejoin='round'
+                                        d='M11.48 3.5l2.31 4.68 5.18.75-3.75 3.65.89 5.19L11.5 15.9l-4.61 2.42.88-5.19-3.75-3.65 5.19-.75 2.27-4.63z' />
+                                </svg>
+                            </template>
+
+                            <template
+                                x-if="(item.ratings_avg_nilai_rating ?? 0) - Math.floor(item.ratings_avg_nilai_rating ?? 0) >= 0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox='0 0 24 24' fill='url(#half)'
+                                    stroke='#facc15' stroke-width='1.5' class='w-4 h-4'>
+                                    <defs>
+                                        <linearGradient id='half'>
+                                            <stop offset='50%' stop-color='#facc15'></stop>
+                                            <stop offset='50%' stop-color='transparent'></stop>
+                                        </linearGradient>
+                                    </defs>
+                                    <path stroke-linecap='round' stroke-linejoin='round'
+                                        d='M11.48 3.5l2.31 4.68 5.18.75-3.75 3.65.89 5.19L11.5 15.9l-4.61 2.42.88-5.19-3.75-3.65 5.19-.75 2.27-4.63z' />
+                                </svg>
+                            </template>
+
+                            <span class="text-yellow-400 text-xs ml-1 font-semibold"
+                                x-text="'(' + (item.ratings_avg_nilai_rating ?? 0).toFixed(1) + ')'">
+                            </span>
+
+                        </div>
                     </div>
+
+                    <div class="p-2">
+                        <h3 class="text-xs text-white font-semibold mb-1 leading-tight" x-text="item.judul"></h3>
+
+                        <p class="text-gray-400 text-[10px] mb-2" x-text="item.deskripsi.substring(0,45) + '...'"></p>
+
+                        <a :href="'/film/' + item.slug"
+                            class="bg-blue-400 text-black font-semibold px-2 py-1 rounded text-[11px] block text-center">
+                            Detail
+                        </a>
+                    </div>
+
                 </div>
 
-                {{-- TEKS --}}
-                <div class="p-2">
-                    <h3 class="text-xs text-white font-semibold mb-1 leading-tight">
-                        {{ Str::limit($item->judul, 25) }}
-                    </h3>
-                    <p class="text-gray-400 text-[10px] mb-2 leading-snug">
-                        {{ Str::limit($item->deskripsi, 45) }}
-                    </p>
+            </template>
 
-                    <a href="{{ route('film.detail', $item->slug) }}"
-                        class="bg-blue-400 text-black font-semibold px-2 py-1 rounded text-[11px] hover:bg-blue-500 transition-colors w-full block text-center">
-                        Detail
-                    </a>
-                </div>
+        </section>
 
-            </div>
-        @empty
-            <p class="text-gray-400 text-center col-span-full">Belum ada film.</p>
-        @endforelse
-    </section>
+    </div>
 
 
 
