@@ -1,76 +1,106 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container mt-5">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Daftar Highlight Film</h5>
-                <a href="{{ route('highlight.create') }}" class="btn btn-primary btn-sm">+ Tambah Highlight</a>
-            </div>
+<div class="mt-6 px-6">
 
-            <div class="card-body px-0 pt-0 pb-2">
-                <div class="table-responsive p-0">
-                    <table class="table align-items-center mb-0">
-                        <thead>
-                            <tr>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">
-                                    Thumbnail</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Tagline
-                                </th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Judul
-                                    Film</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">
-                                    Kategori</th>
-                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                    Aksi</th>
-                            </tr>
-                        </thead>
+    <div class="bg-white shadow-xl rounded-xl border border-gray-200">
 
-                        <tbody>
-                            @forelse ($highlights as $highlight)
-                                <tr>
-                                    <td>
-                                        @if ($highlight->thumbnail)
-                                            <img src="{{ asset('storage/' . $highlight->thumbnail) }}" alt="thumbnail" width="100"
-                                                class="rounded">
-                                        @else
-                                            <span class="text-muted">Tidak ada thumbnail</span>
-                                        @endif
-                                    </td>
+        <!-- HEADER -->
+        <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+            <h5 class="text-lg font-semibold text-gray-700">Daftar Highlight Film</h5>
 
-                                    <td>{{ $highlight->tagline ?? '-' }}</td>
-                                    <td>{{ $highlight->film ? $highlight->film->judul : 'Film tidak ditemukan' }}</td>
-                                    <td>{{ $highlight->kategori ?? '-' }}</td>
-
-                                    <td class="text-center">
-                                        {{-- Tombol Edit --}}
-                                        <a href="{{ route('highlight.edit', ['id' => $highlight->id ]) }}"
-                                            class="btn btn-warning">Edit</a>
-
-
-                                        {{-- Tombol Hapus --}}
-                                        <form action="{{ route('highlight.destroy', ['id' => $highlight->id]) }}"
-                                            method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger"
-                                                onclick="return confirm('Yakin ingin menghapus highlight ini?')">
-                                                Hapus
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted py-3">
-                                        Belum ada data highlight.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <a href="{{ route('highlight.create') }}"
+               class="px-4 py-2 bg-gray-900 hover:bg-black text-white text-sm font-semibold rounded-lg shadow">
+                + Tambah Highlight
+            </a>
         </div>
+
+        <!-- TABLE WRAPPER -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-left">
+
+                <!-- TABLE HEAD -->
+                <thead>
+                    <tr class="bg-gray-100 text-gray-600 text-xs uppercase tracking-wider">
+                        <th class="py-3 px-4">Thumbnail</th>
+                        <th class="py-3 px-4">Tagline</th>
+                        <th class="py-3 px-4">Judul Film</th>
+                        <th class="py-3 px-4">Kategori</th>
+                        <th class="py-3 px-4 text-center">Aksi</th>
+                    </tr>
+                </thead>
+
+                <!-- TABLE BODY -->
+                <tbody class="text-sm text-gray-700">
+
+                    @forelse ($highlights as $highlight)
+                    <tr class="border-b hover:bg-gray-50 transition">
+
+                        <!-- THUMBNAIL -->
+                        <td class="py-3 px-4">
+                            @if ($highlight->thumbnail)
+                                <img src="{{ asset('storage/' . $highlight->thumbnail) }}"
+                                     class="w-24 h-16 object-cover rounded-lg shadow">
+                            @else
+                                <span class="text-gray-400 text-sm italic">Tidak ada thumbnail</span>
+                            @endif
+                        </td>
+
+                        <!-- TAGLINE -->
+                        <td class="py-3 px-4">
+                            {{ $highlight->tagline ?? '-' }}
+                        </td>
+
+                        <!-- JUDUL FILM -->
+                        <td class="py-3 px-4 font-semibold text-gray-800">
+                            {{ $highlight->film ? $highlight->film->judul : 'Film tidak ditemukan' }}
+                        </td>
+
+                        <!-- KATEGORI -->
+                        <td class="py-3 px-4 capitalize">
+                            {{ $highlight->kategori ?? '-' }}
+                        </td>
+
+                        <!-- ACTION -->
+                        <td class="py-3 px-4 text-center flex justify-center gap-2">
+
+                            <!-- EDIT -->
+                            <a href="{{ route('highlight.edit', ['id' => $highlight->id]) }}"
+                               class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-xs font-semibold shadow">
+                                Edit
+                            </a>
+
+                            <!-- DELETE -->
+                            <form action="{{ route('highlight.destroy', ['id' => $highlight->id]) }}"
+                                  method="POST"
+                                  onsubmit="return confirm('Yakin ingin menghapus highlight ini?')">
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit"
+                                    class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-semibold shadow">
+                                    Hapus
+                                </button>
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    @empty
+                    <tr>
+                        <td colspan="5" class="text-center py-6 text-gray-500 italic">
+                            Belum ada data highlight.
+                        </td>
+                    </tr>
+                    @endforelse
+
+                </tbody>
+
+            </table>
+        </div>
+
     </div>
+
+</div>
 @endsection

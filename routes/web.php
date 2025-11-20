@@ -31,6 +31,7 @@ Route::get('/rekomendasi', [HomeController::class, 'rekomendasi'])->name('rekome
 
 
 
+
 // ----------------------------------------------------
 // 🔹 AUTH (Hanya untuk tamu yang belum login)
 // ----------------------------------------------------
@@ -44,6 +45,7 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::post('post-komen', [KomentarController::class, 'store'])->name('komen.post');
+    Route::delete('/komentar/{id}', [KomentarController::class, 'destroy'])->name('komen.delete');
 });
 
 // ----------------------------------------------------

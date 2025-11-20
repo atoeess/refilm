@@ -16,26 +16,26 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $films = Film::withAvg('ratings', 'nilai_rating')->get();
+
         return view('home', [
             'genres' => Genre::all(),
             'negaras' => Negara::all(),
             'highlights' => Highlight::with('film')->latest()->get(),
 
-            // Film untuk grid biasa
-            'film' => Film::select('id', 'judul', 'slug', 'foto', 'deskripsi')->get(),
-
-            // Film untuk tab "Semua"
-            'films' => Film::select('id', 'judul', 'slug', 'foto', 'deskripsi')->get(),
-
-            // Film untuk tab "Populer"
-            'filmsPopuler' => Film::withCount('ratings')
-                ->orderBy('ratings_count', 'desc')
+            'films' => $films,
+            'filmsSemua' => $films,   // ⭐ perbaikan di sini
+            'filmsPopuler' => Film::withAvg('ratings', 'nilai_rating')
+                ->orderByDesc('ratings_avg_nilai_rating')
                 ->get(),
 
-            // Film untuk tab "Baru" — sort dari tahun terbaru
-            'filmsBaru' => Film::orderBy('tahun', 'desc')->get(),
+            'filmsBaru' => Film::withAvg('ratings', 'nilai_rating')
+                ->orderByDesc('tahun')
+                ->get(),
         ]);
     }
+
+
 
 
 
@@ -45,19 +45,48 @@ class HomeController extends Controller
 
         if ($tab === 'populer') {
             $films = Film::withCount('ratings')
+                ->withAvg('ratings', 'nilai_rating')
                 ->orderBy('ratings_count', 'desc')
                 ->paginate(12);
         } elseif ($tab === 'baru') {
-            $films = Film::orderBy('tanggal_rilis', 'desc')->paginate(12);
+            $films = Film::withAvg('ratings', 'nilai_rating')
+                ->orderBy('tanggal_rilis', 'desc')
+                ->paginate(12);
         } else {
-            $films = Film::paginate(12);
+            $films = Film::withAvg('ratings', 'nilai_rating')
+                ->withCount('ratings')
+                ->paginate(12);
         }
 
+        // 🔹 Data untuk Alpine (tanpa pagination)
+        $filmsPopuler = Film::withCount('ratings')
+            ->withAvg('ratings', 'nilai_rating')
+            ->orderBy('ratings_count', 'desc')
+            ->take(30)
+            ->get();
+
+        $filmsBaru = Film::withAvg('ratings', 'nilai_rating')
+            ->orderBy('tanggal_rilis', 'desc')
+            ->take(30)
+            ->get();
+
+        $filmsSemua = Film::withAvg('ratings', 'nilai_rating')
+            ->withCount('ratings')
+            ->take(30)
+            ->get();
+
         return view('rekomendasi', [
-            'films' => $films,
+            'films' => $films,           // dipakai server-side
+            'filmsSemua' => $filmsSemua, // 🔥 FIX WAJIB
+            'filmsPopuler' => $filmsPopuler,
+            'filmsBaru' => $filmsBaru,
             'tab' => $tab
         ]);
     }
+
+
+
+
 
 
 

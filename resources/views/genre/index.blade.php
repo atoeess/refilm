@@ -1,204 +1,109 @@
 @extends('layouts.app')
 
 @section('content')
-   <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg"
-      style="background: linear-gradient(180deg, #F0E68C 0%, #D2B48C 100%);">
 
-        <!-- Navbar -->
-        <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
-            navbar-scroll="true">
-            <div class="container-fluid py-1 px-3">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                        <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-                        <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Genre</li>
-                    </ol>
-                    <h6 class="font-weight-bolder mb-0">Genre</h6>
-                </nav>
-                <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
-                    <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+<main class="main-content" style="min-height: 100vh; padding-top: 20px; background: linear-gradient(180deg, #F0E68C 0%, #D2B48C 100%); font-family: sans-serif;">
 
-                    </div>
-                    <ul class="navbar-nav  justify-content-end">
-                        <li class="nav-item d-flex align-items-center">
-                            <a href="javascript:;" class="nav-link text-body font-weight-bold px-0">
-                                <i class="fa fa-user me-sm-1"></i>
-                                <span class="d-sm-inline d-none">LOGOUT</span>
-                            </a>
-                        </li>
-                        <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
-                            <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
-                                <div class="sidenav-toggler-inner">
-                                    <i class="sidenav-toggler-line"></i>
-                                    <i class="sidenav-toggler-line"></i>
-                                    <i class="sidenav-toggler-line"></i>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="nav-item px-3 d-flex align-items-center">
-                            <a href="javascript:;" class="nav-link text-body p-0">
-                                <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item dropdown pe-2 d-flex align-items-center">
-                            <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa fa-bell cursor-pointer"></i>
-                            </a>
-                            <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4"
-                                aria-labelledby="dropdownMenuButton">
-                                <li class="mb-2">
-                                    <a class="dropdown-item border-radius-md" href="javascript:;">
-                                        <div class="d-flex py-1">
-                                            <div class="my-auto">
-                                                <img src="../assets/img/team-2.jpg" class="avatar avatar-sm  me-3 ">
-                                            </div>
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="text-sm font-weight-normal mb-1">
-                                                    <span class="font-weight-bold">New message</span> from Laur
-                                                </h6>
-                                                <p class="text-xs text-secondary mb-0">
-                                                    <i class="fa fa-clock me-1"></i>
-                                                    13 minutes ago
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="mb-2">
-                                    <a class="dropdown-item border-radius-md" href="javascript:;">
-                                        <div class="d-flex py-1">
-                                            <div class="my-auto">
-                                                <img src="../assets/img/small-logos/logo-spotify.svg"
-                                                    class="avatar avatar-sm bg-gradient-dark  me-3 ">
-                                            </div>
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="text-sm font-weight-normal mb-1">
-                                                    <span class="font-weight-bold">New album</span> by Travis Scott
-                                                </h6>
-                                                <p class="text-xs text-secondary mb-0">
-                                                    <i class="fa fa-clock me-1"></i>
-                                                    1 day
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item border-radius-md" href="javascript:;">
-                                        <div class="d-flex py-1">
-                                            <div class="avatar avatar-sm bg-gradient-secondary  me-3  my-auto">
-                                                <svg width="12px" height="12px" viewBox="0 0 43 36" version="1.1"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink">
-                                                    <title>credit-card</title>
-                                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                        <g transform="translate(-2169.000000, -745.000000)" fill="#FFFFFF"
-                                                            fill-rule="nonzero">
-                                                            <g transform="translate(1716.000000, 291.000000)">
-                                                                <g transform="translate(453.000000, 454.000000)">
-                                                                    <path class="color-background"
-                                                                        d="M43,10.7482083 L43,3.58333333 C43,1.60354167 41.3964583,0 39.4166667,0 L3.58333333,0 C1.60354167,0 0,1.60354167 0,3.58333333 L0,10.7482083 L43,10.7482083 Z"
-                                                                        opacity="0.593633743"></path>
-                                                                    <path class="color-background"
-                                                                        d="M0,16.125 L0,32.25 C0,34.2297917 1.60354167,35.8333333 3.58333333,35.8333333 L39.4166667,35.8333333 C41.3964583,35.8333333 43,34.2297917 43,32.25 L43,16.125 L0,16.125 Z M19.7083333,26.875 L7.16666667,26.875 L7.16666667,23.2916667 L19.7083333,23.2916667 L19.7083333,26.875 Z M35.8333333,26.875 L28.6666667,26.875 L28.6666667,23.2916667 L35.8333333,23.2916667 L35.8333333,26.875 Z">
-                                                                    </path>
-                                                                </g>
-                                                            </g>
-                                                        </g>
-                                                    </g>
-                                                </svg>
-                                            </div>
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="text-sm font-weight-normal mb-1">
-                                                    Payment successfully completed
-                                                </h6>
-                                                <p class="text-xs text-secondary mb-0">
-                                                    <i class="fa fa-clock me-1"></i>
-                                                    2 days
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <!-- End Navbar -->
-        <div class="container-fluid py-4">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card mb-4">
-                        <!-- Header -->
-                        <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-                            <h6 class="text-uppercase text-secondary font-weight-bolder mb-0">GENRE TABLE</h6>
-                            <a href="{{ route('genre.create') }}" class="btn bg-gradient-dark"
-                                style="padding:10px 25px; font-weight:bold; border-radius:8px;">
-                                <i class="fas fa-plus"></i>&nbsp;Tambah Genre
-                            </a>
-                        </div>
-
-                        <!-- Body -->
-                        <div class="card-body px-0 pt-0 pb-2">
-                            <div class="table-responsive p-0">
-                                <table class="table align-items-center mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th
-                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">
-                                                Nama Genre</th>
-                                            <th
-                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($genres as $genre)
-                                            <tr>
-                                                <td class="ps-4">
-                                                    <div class="d-flex flex-column justify-content-center">
-                                                        <h6 class="mb-0 text-sm">{{ $genre->nama_genre }}</h6>
-                                                    </div>
-                                                     <td class="align-middle text-center">
-                                                        <a href="{{ route('genre.edit', $genre->id) }}"
-                                                            class="btn btn-sm bg-gradient-warning text-white me-2"
-                                                        style="font-weight:600; border-radius:8px; padding:6px 12px;"
-                                                        data-toggle="tooltip" title="Edit Genre"><i class="fas fa-edit me-1"></i> Edit</a>
-
-
-                                                        <form action="{{ route('genre.destroy', $genre->id) }}" method="POST"
-                                                            method="POST" class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit"
-                                                            class="btn btn-sm bg-gradient-danger text-white"
-                                                            style="font-weight:600; border-radius:8px; padding:6px 12px;"
-                                                            onclick="return confirm('Yakin ingin menghapus film ini?')"
-                                                            data-toggle="tooltip" title="Hapus Genre">
-                                                            <i class="fas fa-trash-alt me-1"></i> Hapus
-                                                        </button>
-                                                        </form>
-                                                    </td>
-                                                </td>
-
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="2" class="text-center text-muted py-3">
-                                                    Belum ada data genre.
-                                                </td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- NAVBAR -->
+     <nav style="display: flex; margin-left: 20px; margin-right: 20px; justify-content: space-between; align-items: center; padding: 10px 20px; background: rgba(255,255,255,0.8); border-radius: 8px; margin-bottom: 20px;">
+        <div>
+            <h6 style="margin: 0; font-weight: bold;">Genre</h6>
         </div>
-    </main>
+    </nav>
+
+
+        <!-- Right Side -->
+        {{-- <div class="flex items-center gap-4">
+
+            <!-- Settings -->
+            <button class="text-gray-700 hover:text-black">
+                <i class="fa fa-cog text-lg"></i>
+            </button>
+
+            <!-- Notification -->
+            <button class="text-gray-700 hover:text-black">
+                <i class="fa fa-bell text-lg"></i>
+            </button>
+
+        </div> --}}
+    </nav>
+
+    <!-- CONTENT -->
+    <div style="padding: 0 20px;">
+        <div style="background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h6 style="text-transform: uppercase; color: #888;">Genre Table</h6>
+                <a href="{{ route('genre.create') }}" style="background: #333; color: #fff; padding: 10px 25px; font-weight: bold; border-radius: 8px; text-decoration: none;">
+                    + Tambah Genre
+                </a>
+            </div>
+
+
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-600 uppercase text-xs">
+                            <th class="py-3 px-4 text-left">Nama Genre</th>
+                            <th class="py-3 px-4 text-center w-40">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="text-sm text-gray-700">
+
+                        @forelse ($genres as $genre)
+                            <tr class="border-b hover:bg-gray-50 transition">
+
+                                <!-- Nama Genre -->
+                                <td class="py-3 px-4 font-medium">
+                                    {{ $genre->nama_genre }}
+                                </td>
+
+                                <!-- Action -->
+                                <td class="py-3 px-4 flex justify-center gap-2">
+
+                                    {{-- EDIT --}}
+                                    <a href="{{ route('genre.edit', $genre->id) }}"
+                                       class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-xs font-semibold shadow">
+                                        <i class="fas fa-edit mr-1"></i> Edit
+                                    </a>
+
+                                    {{-- DELETE --}}
+                                    <form action="{{ route('genre.destroy', $genre->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit"
+                                            onclick="return confirm('Yakin ingin menghapus genre ini?')"
+                                            class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-semibold shadow">
+                                            <i class="fas fa-trash-alt mr-1"></i> Hapus
+                                        </button>
+                                    </form>
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+                            <tr>
+                                <td colspan="2" class="py-6 text-center text-gray-500">
+                                    Belum ada data genre.
+                                </td>
+                            </tr>
+                        @endforelse
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
 @endsection

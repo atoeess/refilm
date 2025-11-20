@@ -11,6 +11,7 @@ use App\Models\Highlight;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class FilmController extends Controller
 {
@@ -93,7 +94,15 @@ class FilmController extends Controller
 
         $highlights = Highlight::where('id_film', $film->id)->get();
 
-        return view('film.detail', compact('film', 'komentars', 'highlights'));
+        $rekomendasi = Film::where('id', '!=', $film->id)
+            ->whereHas('genres', function ($q) use ($film) {
+                $q->whereIn('genres.id', $film->genres->pluck('id'));
+            })
+            ->limit(6)
+            ->get();
+
+
+        return view('film.detail', compact('film', 'komentars', 'highlights', 'rekomendasi'));
     }
 
     /**
@@ -197,7 +206,7 @@ class FilmController extends Controller
 
         Rating::updateOrCreate(
             [
-                'id_user' => auth()->id(),
+                'id_user' => Auth::id(),
                 'id_film' => $request->film_id,
             ],
             [

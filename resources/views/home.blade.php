@@ -20,13 +20,13 @@
             <h1 class="text-3xl font-bold text-blue-400">ReFilm</h1>
         </div>
 
-
         <!-- 🔹 Search Bar -->
         <form action="{{ route('film.search') }}" method="GET" class="relative flex-1 mx-12">
             <input type="text" name="q" placeholder="Cari film..."
                 class="w-full px-4 py-2 rounded bg-[#1e1e1e] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 border border-gray-700">
         </form>
 
+        <!-- 🔹 Dropdown & Auth Buttons -->
         <!-- 🔹 Dropdown & Auth Buttons -->
         <div class="flex space-x-3">
 
@@ -72,7 +72,6 @@
                 </div>
             </div>
 
-
             {{-- 🔹 Login / Logout --}}
             @guest
                 <a href="{{ route('login') }}"
@@ -82,6 +81,13 @@
             @endguest
 
             @auth
+                @if (Auth::user()->role === 'admin')
+                    <a href="{{ route('dashboard') }}"
+                        class="bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-sm text-white font-semibold transition-all duration-200">
+                        Dashboard Admin
+                    </a>
+                @endif
+
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button type="submit"
@@ -91,6 +97,7 @@
                 </form>
             @endauth
         </div>
+
     </nav>
 
     {{-- 🔹 HERO SECTION --}}
@@ -107,7 +114,6 @@
 
             <div class="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
 
-            {{-- Konten Judul --}}
             <div class="relative z-10 p-10 md:p-16 transition-all duration-500">
                 <p class="inline-block text-white font-semibold px-6 py-2 bg-blue-400/60 backdrop-blur-sm rounded-tl-xl rounded-br-xl"
                     x-text="items[current].tagline">
@@ -123,19 +129,15 @@
                 </a>
             </div>
 
-            {{-- 🔥 Thumbnail Indicator Center --}}
             <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20">
                 <div class="flex flex-nowrap space-x-2 px-4 py-2 bg-black/50 backdrop-blur-sm rounded-lg">
-
                     @foreach ($highlights as $i => $h)
                         <div x-on:click="current = {{ $i }}"
                             class="flex-shrink-0 w-32 h-18 rounded-md overflow-hidden cursor-pointer border-4 transition-all duration-300"
                             :class="current === {{ $i }} ? 'border-blue-400' : 'border-transparent'">
-
                             <img src="{{ asset('storage/' . $h->thumbnail) }}" class="w-full h-full object-cover">
                         </div>
                     @endforeach
-
                 </div>
             </div>
 
@@ -146,53 +148,44 @@
         </section>
     @endif
 
-
-
     <div x-data="{
         tab: 'semua',
-        semua: @js($films),
+        semua: @js($filmsSemua),
         populer: @js($filmsPopuler),
         baru: @js($filmsBaru),
     }" class="px-8 py-10">
 
-        <!-- HEADER -->
         <h2 class="text-4xl font-bold mb-4 text-blue-400">Rekomendasi Film</h2>
 
         <div class="flex items-center border-b border-gray-700 pb-2 space-x-6 text-lg font-semibold">
-
             <button @click="tab = 'semua'"
                 :class="tab === 'semua' ? 'text-white border-b-2 border-blue-400' : 'text-blue-300 hover:text-white'">
                 Semua
             </button>
-
             <button @click="tab = 'populer'"
                 :class="tab === 'populer' ? 'text-white border-b-2 border-blue-400' : 'text-blue-300 hover:text-white'">
                 Film Populer
             </button>
-
             <button @click="tab = 'baru'"
                 :class="tab === 'baru' ? 'text-white border-b-2 border-blue-400' : 'text-blue-300 hover:text-white'">
                 Baru Rilis
             </button>
-
         </div>
 
-        <!-- LIST FILM -->
         <section class="px-4 py-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
 
             <template x-for="item in (tab === 'semua' ? semua : tab === 'populer' ? populer : baru)"
                 :key="item.id">
 
                 <div class="bg-[#1a1a1a] rounded-lg overflow-hidden shadow-md hover:scale-105 transition w-full">
-
                     <div class="relative">
-
                         <img :src="'/storage/fotos/' + item.foto" class="w-full h-44 object-cover">
 
+                        <!-- Rating -->
                         <div
                             class="absolute bottom-1 left-1 bg-black/60 px-2 py-1 rounded-md flex items-center space-x-1 backdrop-blur-sm">
 
-                            <template x-for="i in Math.floor(item.ratings_avg_nilai_rating ?? 0)">
+                            <template x-for="i in Math.floor(Number(item.ratings_avg_nilai_rating) || 0)">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill='#facc15' viewBox='0 0 24 24'
                                     stroke-width='1.5' stroke='#facc15' class='w-4 h-4'>
                                     <path stroke-linecap='round' stroke-linejoin='round'
@@ -201,7 +194,8 @@
                             </template>
 
                             <template
-                                x-if="(item.ratings_avg_nilai_rating ?? 0) - Math.floor(item.ratings_avg_nilai_rating ?? 0) >= 0.5">
+                                x-if="(Number(item.ratings_avg_nilai_rating) || 0) - Math.floor(Number(item.ratings_avg_nilai_rating) || 0) >= 0.5">
+
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox='0 0 24 24' fill='url(#half)'
                                     stroke='#facc15' stroke-width='1.5' class='w-4 h-4'>
                                     <defs>
@@ -216,7 +210,7 @@
                             </template>
 
                             <span class="text-yellow-400 text-xs ml-1 font-semibold"
-                                x-text="'(' + (item.ratings_avg_nilai_rating ?? 0).toFixed(1) + ')'">
+                                x-text="'(' + (Number(item.ratings_avg_nilai_rating) || 0).toFixed(1) + ')'">
                             </span>
 
                         </div>
@@ -224,15 +218,12 @@
 
                     <div class="p-2">
                         <h3 class="text-xs text-white font-semibold mb-1 leading-tight" x-text="item.judul"></h3>
-
                         <p class="text-gray-400 text-[10px] mb-2" x-text="item.deskripsi.substring(0,45) + '...'"></p>
-
                         <a :href="'/film/' + item.slug"
                             class="bg-blue-400 text-black font-semibold px-2 py-1 rounded text-[11px] block text-center">
                             Detail
                         </a>
                     </div>
-
                 </div>
 
             </template>
@@ -240,8 +231,6 @@
         </section>
 
     </div>
-
-
 
 </body>
 

@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Film;
+use App\Models\Genre;
+use App\Models\Negara;
+use App\Models\User;
 use Illuminate\Http\Request;
+
 
 class DashboardController extends Controller
 {
@@ -10,9 +15,14 @@ class DashboardController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        return view('dashboard');
-    }
+{
+    $film = Film::count();
+    $genre = Genre::count();
+    $negara = Negara::count();
+    $user = User::count();
+
+    return view('dashboard', compact('film', 'genre', 'negara', 'user'));
+}
 
     /**
      * Show the form for creating a new resource.

@@ -2,49 +2,109 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
-    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>
-        ReFilms
-    </title>
+    <title>ReFilms</title>
 
-    <!--     Fonts and icons     -->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
-    <!-- Nucleo Icons -->
-    <link href="{{ asset('soft-ui-dashboard/assets/css/nucleo-icons.css')}}" rel="stylesheet" />
-    <link href="{{ asset('soft-ui-dashboard/assets/css/nucleo-svg.css')}}" rel="stylesheet" />
-    <!-- Font Awesome Icons -->
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font & Icons -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700" rel="stylesheet">
     <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
-    <link href="{{ asset('soft-ui-dashboard/assets/css/nucleo-svg.css')}}" rel="stylesheet" />
-    <!-- CSS Files -->
-    <link id="pagestyle" href="{{ asset('soft-ui-dashboard/assets/css/soft-ui-dashboard.css?v=1.0.3')}}" rel="stylesheet" />
-     {{-- <script src="https://cdn.tailwindcss.com"></script> --}}
 
-     {{-- <script src="https://cdn.tailwindcss.com"></script>e --}}
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+
 </head>
 
-<body class="g-sidenav-show ">
+<body class="bg-gray-100 flex">
 
-    @include('layouts.sidebar')
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white shadow-lg h-screen sticky top-0 flex flex-col">
 
-
-    <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg">
-
-        <div class="container-fluid py-4">
-            @yield('content')
+        <div class="p-5 border-b">
+            <h1 class="text-xl font-bold text-gray-800">🎬 ReFilms</h1>
         </div>
+
+        <nav class="flex-1 overflow-y-auto">
+            <ul class="p-4 space-y-2 text-gray-700">
+
+                <li>
+                    <a href="{{ route("dashboard")}}"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+                        <i class="fa-solid fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route("film.index")}}"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+                        <i class="fa-solid fa-film"></i>
+                        Films
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route("genre.index")}}"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+                        <i class="fa-solid fa-tags"></i>
+                        Genre
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route("negara.index")}}"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+                        <i class="fa-solid fa-tags"></i>
+                        Negara
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route("highlight.index")}}"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+                        <i class="fa-solid fa-star"></i>
+                        Highlight
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route("home")}}"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+                        <i class="fa-solid fa-star"></i>
+                        Home
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+
+        <div class="p-4 border-t">
+            <form action="{{ route("logout")}}" method="POST">
+                @csrf
+                <button
+                    class="w-full bg-red-500 hover:bg-red-600 px-4 py-2 text-white rounded-lg transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Logout
+                </button>
+            </form>
+        </div>
+
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+
+        @yield('content')
+
     </main>
-
-    <script src="{{ asset('soft-ui-dashboard/assets/js/core/popper.min.js')}}"></script>
-    <script src="{{ asset('soft-ui-dashboard/assets/js/core/bootstrap.min.js')}}"></script>
-    <script src="{{ asset('soft-ui-dashboard/assets/js/plugins/perfect-scrollbar.min.js')}}"></script>
-    <script src="{{ asset('soft-ui-dashboard/assets/js/plugins/smooth-scrollbar.min.js')}}"></script>
-    <script src="{{ asset('soft-ui-dashboard/assets/js/plugins/chartjs.min.js')}}"></script>
-
-
 
 </body>
 

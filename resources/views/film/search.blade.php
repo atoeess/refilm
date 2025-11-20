@@ -42,76 +42,62 @@
             </div>
         @else
             {{-- 🔹 Grid hasil pencarian --}}
-            <section class="px-4 py-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-                @forelse ($films as $item)
-                    <div
-                        class="bg-[#1a1a1a] rounded-lg overflow-hidden shadow-md hover:scale-105 transition-transform duration-300 relative w-full">
+            <section x-data="{ items: @js($films) }"
+                class="px-4 py-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
 
-                        {{-- FOTO + RATING --}}
+                <template x-for="item in items" :key="item.id">
+
+                    <div class="bg-[#1a1a1a] rounded-lg overflow-hidden shadow-md hover:scale-105 transition w-full">
                         <div class="relative">
-                            <img src="{{ asset('storage/fotos/' . $item->foto) }}" alt="{{ $item->judul }}"
-                                class="w-full h-44 object-cover">
+                            <img :src="'/storage/fotos/' + item.foto" class="w-full h-44 object-cover">
 
-                            {{-- ⭐ Rating (Dummy Rating 4.5) --}}
-                            @php
-                                $rating = 4.5;
-                                $fullStars = floor($rating);
-                                $halfStar = $rating - $fullStars >= 0.5;
-                            @endphp
-
+                            <!-- Rating -->
                             <div
                                 class="absolute bottom-1 left-1 bg-black/60 px-2 py-1 rounded-md flex items-center space-x-1 backdrop-blur-sm">
 
-                                {{-- Bintang penuh --}}
-                                @for ($i = 0; $i < $fullStars; $i++)
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="#facc15" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="#facc15" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M11.48 3.5l2.31 4.68 5.18.75-3.75 3.65.89 5.19L11.5 15.9l-4.61 2.42.88-5.19-3.75-3.65 5.19-.75 2.27-4.63z" />
+                                <template x-for="i in Math.floor(Number(item.ratings_avg_nilai_rating) || 0)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill='#facc15' viewBox='0 0 24 24'
+                                        stroke-width='1.5' stroke='#facc15' class='w-4 h-4'>
+                                        <path stroke-linecap='round' stroke-linejoin='round'
+                                            d='M11.48 3.5l2.31 4.68 5.18.75-3.75 3.65.89 5.19L11.5 15.9l-4.61 2.42.88-5.19-3.75-3.65 5.19-.75 2.27-4.63z' />
                                     </svg>
-                                @endfor
+                                </template>
 
-                                {{-- Bintang setengah --}}
-                                @if ($halfStar)
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="url(#half)"
-                                        stroke="#facc15" stroke-width="1.5" class="w-4 h-4">
+                                <template
+                                    x-if="(Number(item.ratings_avg_nilai_rating) || 0) - Math.floor(Number(item.ratings_avg_nilai_rating) || 0) >= 0.5">
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox='0 0 24 24' fill='url(#half)'
+                                        stroke='#facc15' stroke-width='1.5' class='w-4 h-4'>
                                         <defs>
-                                            <linearGradient id="half">
-                                                <stop offset="50%" stop-color="#facc15" />
-                                                <stop offset="50%" stop-color="transparent" />
+                                            <linearGradient id='half'>
+                                                <stop offset='50%' stop-color='#facc15'></stop>
+                                                <stop offset='50%' stop-color='transparent'></stop>
                                             </linearGradient>
                                         </defs>
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M11.48 3.5l2.31 4.68 5.18.75-3.75 3.65.89 5.19L11.5 15.9l-4.61 2.42.88-5.19-3.75-3.65 5.19-.75 2.27-4.63z" />
+                                        <path stroke-linecap='round' stroke-linejoin='round'
+                                            d='M11.48 3.5l2.31 4.68 5.18.75-3.75 3.65.89 5.19L11.5 15.9l-4.61 2.42.88-5.19-3.75-3.65 5.19-.75 2.27-4.63z' />
                                     </svg>
-                                @endif
+                                </template>
 
-                                <span class="text-yellow-400 text-xs ml-1 font-semibold">
-                                    ({{ number_format($rating, 1) }})
+                                <span class="text-yellow-400 text-xs ml-1 font-semibold"
+                                    x-text="'(' + (Number(item.ratings_avg_nilai_rating) || 0).toFixed(1) + ')'">
                                 </span>
+
                             </div>
                         </div>
 
-                        {{-- TEKS --}}
                         <div class="p-2">
-                            <h3 class="text-xs text-white font-semibold mb-1 leading-tight">
-                                {{ Str::limit($item->judul, 25) }}
-                            </h3>
-
-                            <p class="text-gray-400 text-[10px] mb-2 leading-snug">
-                                {{ Str::limit($item->deskripsi, 45) }}
-                            </p>
-
-                            <a href="{{ route('film.detail', $item->slug) }}"
-                                class="bg-blue-400 text-black font-semibold px-2 py-1 rounded text-[11px]
-                              hover:bg-blue-500 transition-colors w-full block text-center">
+                            <h3 class="text-xs text-white font-semibold mb-1 leading-tight" x-text="item.judul"></h3>
+                            <p class="text-gray-400 text-[10px] mb-2" x-text="item.deskripsi.substring(0,45) + '...'"></p>
+                            <a :href="'/film/' + item.slug"
+                                class="bg-blue-400 text-black font-semibold px-2 py-1 rounded text-[11px] block text-center">
                                 Detail
                             </a>
                         </div>
-
                     </div>
-                @empty
-                @endforelse
+
+                </template>
+
             </section>
         @endif
     </div>

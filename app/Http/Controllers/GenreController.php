@@ -41,7 +41,7 @@ class GenreController extends Controller
 
         ]);
 
-        return redirect()->route('genre.index')->with('success','Sukses menambahkan data genre');
+        return redirect()->route('genre.index')->with('success', 'Sukses menambahkan data genre');
     }
 
     /**
@@ -57,28 +57,26 @@ class GenreController extends Controller
      */
     public function edit(string $id)
     {
-        $genres = Genre::findOrFail($id);
-        return view('genre.edit', compact('genres'));
+        $genre = Genre::findOrFail($id); // <-- pakai singular
+        return view('genre.edit', compact('genre'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-   public function update(Request $request, string $id)
+    public function update(Request $request, string $id)
     {
         $request->validate([
             'nama_genre' => 'required',
         ]);
 
-        $genres = Genre::findOrFail($id);
+        $genre = Genre::findOrFail($id);
 
-        $genres->update([
+        $genre->update([
             'nama_genre' => $request->nama_genre,
             'slug' => Str::slug($request->nama_genre),
         ]);
 
         return redirect()->route('genre.index')->with('success', 'Data genre berhasil diperbarui!');
     }
+
 
 
     /**

@@ -2,10 +2,10 @@
 
 @section('content')
     <!-- =========================================================
-     * Soft UI Dashboard - v1.0.3
-     * Product Page: https://www.creative-tim.com/product/soft-ui-dashboard
-     * Licensed under MIT
-     ========================================================= -->
+                         * Soft UI Dashboard - v1.0.3
+                         * Product Page: https://www.creative-tim.com/product/soft-ui-dashboard
+                         * Licensed under MIT
+                         ========================================================= -->
 
     <!DOCTYPE html>
     <html lang="en">
@@ -24,14 +24,16 @@
         <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
 
         <!-- CSS Files -->
-        <link id="pagestyle" href="{{ asset('soft-ui-dashboard/assets/css/soft-ui-dashboard.css?v=1.0.3') }}" rel="stylesheet" />
+        <link id="pagestyle" href="{{ asset('soft-ui-dashboard/assets/css/soft-ui-dashboard.css?v=1.0.3') }}"
+            rel="stylesheet" />
     </head>
 
     <body class="g-sidenav-show bg-gray-100">
         <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg">
 
             <!-- Navbar -->
-            <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
+            <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
+                navbar-scroll="true">
                 <div class="container-fluid py-1 px-3">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
@@ -57,7 +59,8 @@
                             <li class="nav-item d-flex align-items-center">
                                 <form action="{{ route('logout') }}" method="POST" class="m-0 p-0">
                                     @csrf
-                                    <button type="submit" class="nav-link text-body font-weight-bold px-0 border-0 bg-transparent">
+                                    <button type="submit"
+                                        class="nav-link text-body font-weight-bold px-0 border-0 bg-transparent">
                                         <i class="fa fa-user me-sm-1"></i>
                                         <span class="logout-btn">Logout</span>
                                     </button>
@@ -85,7 +88,8 @@
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fa fa-bell cursor-pointer"></i>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
+                                <ul class="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4"
+                                    aria-labelledby="dropdownMenuButton">
                                     <li class="mb-2">
                                         <a class="dropdown-item border-radius-md" href="javascript:;">
                                             <div class="d-flex py-1">
@@ -111,10 +115,73 @@
             </nav>
             <!-- End Navbar -->
 
-            {{-- SECTION KONTEN UTAMA (BISA AKTIFKAN LAGI) --}}
-            {{-- <div class="container-fluid py-4">
-                ...
-            </div> --}}
+            <!-- Section Card Statistik -->
+            <div class="container-fluid py-4">
+
+                <div class="row">
+                    <!-- Film -->
+                    <div class="col-xl-6 col-sm-6 mb-4">
+                        <a href="{{ route('film.index') }}" class="text-decoration-none">
+                            <div class="card shadow-sm border-0" style="border-radius: 10px; cursor:pointer;">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h4 class="text-success mb-0">{{ $film }}</h4>
+                                        <small class="text-secondary">Data Film</small>
+                                    </div>
+                                    <i class="fas fa-film fa-2x text-secondary"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Genre -->
+                    <div class="col-xl-6 col-sm-6 mb-4">
+                        <a href="{{ route('genre.index') }}" class="text-decoration-none">
+                            <div class="card shadow-sm border-0" style="border-radius: 10px; cursor:pointer;">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h4 class="text-success mb-0">{{ $genre }}</h4>
+                                        <small class="text-secondary">Data Genre</small>
+                                    </div>
+                                    <i class="fas fa-palette fa-2x text-secondary"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <!-- Negara -->
+                    <div class="col-xl-6 col-sm-6 mb-4">
+                        <a href="{{ route('negara.index') }}" class="text-decoration-none">
+                            <div class="card shadow-sm border-0" style="border-radius: 10px; cursor:pointer;">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h4 class="text-success mb-0">{{ $negara }}</h4>
+                                        <small class="text-secondary">Data Negara</small>
+                                    </div>
+                                    <i class="fas fa-globe fa-2x text-secondary"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- User (Tanpa Link) -->
+                    <div class="col-xl-6 col-sm-6 mb-4">
+                        <div class="card shadow-sm border-0" style="border-radius: 10px;">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="text-success mb-0">{{ $user }}</h4>
+                                    <small class="text-secondary">Data User</small>
+                                </div>
+                                <i class="fas fa-user fa-2x text-secondary"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>  
         </main>
 
         <!-- Fixed Plugin -->
@@ -142,5 +209,6 @@
         </div>
 
     </body>
+
     </html>
 @endsection
