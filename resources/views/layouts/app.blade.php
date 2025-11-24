@@ -68,6 +68,14 @@
                 </li>
 
                 <li>
+                    <a href="{{ route("tahun.index")}}"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+                        <i class="fa-solid fa-tags"></i>
+                       Tahun
+                    </a>
+                </li>
+
+                <li>
                     <a href="{{ route("highlight.index")}}"
                         class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
                         <i class="fa-solid fa-star"></i>

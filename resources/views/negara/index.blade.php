@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<main class="main-content" style="min-height: 100vh; padding-top: 20px; background: linear-gradient(180deg, #F0E68C 0%, #D2B48C 100%); font-family: sans-serif;">
+<main class="main-content" style="min-height: 100vh; padding-top: 20px; background: linear-gradient(180deg, #ececec 0%, #ececec 100%); font-family: sans-serif;">
 
     <!-- Navbar -->
     <nav style="display: flex; margin-left: 20px; margin-right: 20px; justify-content: space-between; align-items: center; padding: 10px 20px; background: rgba(255,255,255,0.8); border-radius: 8px; margin-bottom: 20px;">

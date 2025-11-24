@@ -1,214 +1,196 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- =========================================================
-                         * Soft UI Dashboard - v1.0.3
-                         * Product Page: https://www.creative-tim.com/product/soft-ui-dashboard
-                         * Licensed under MIT
-                         ========================================================= -->
+<!DOCTYPE html>
+<html lang="en">
 
-    <!DOCTYPE html>
-    <html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
-        <link rel="icon" type="image/png" href="../assets/img/favicon.png">
-        <title>Soft UI Dashboard by Creative Tim</title>
+    <!-- Fonts / Icons -->
+    <link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" rel="stylesheet" />
+    <link href="{{ asset('soft-ui-dashboard/assets/css/nucleo-icons.css') }}" rel="stylesheet" />
+    <link href="{{ asset('soft-ui-dashboard/assets/css/nucleo-svg.css') }}" rel="stylesheet" />
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
 
-        <!-- Fonts and icons -->
-        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
-        <link href="{{ asset('soft-ui-dashboard/assets/css/nucleo-icons.css') }}" rel="stylesheet" />
-        <link href="{{ asset('soft-ui-dashboard/assets/css/nucleo-svg.css') }}" rel="stylesheet" />
-        <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <!-- Soft UI CSS -->
+    <link id="pagestyle" href="{{ asset('soft-ui-dashboard/assets/css/soft-ui-dashboard.css?v=1.0.3') }}"
+        rel="stylesheet" />
 
-        <!-- CSS Files -->
-        <link id="pagestyle" href="{{ asset('soft-ui-dashboard/assets/css/soft-ui-dashboard.css?v=1.0.3') }}"
-            rel="stylesheet" />
-    </head>
+    <style>
+        body {
+            font-family: "Inter", sans-serif !important;
+        }
 
-    <body class="g-sidenav-show bg-gray-100">
-        <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg">
+        .soft-card {
+            border-radius: 18px;
+            transition: all 0.2s ease-in-out;
+            background: linear-gradient(145deg, #ffffff, #e8e8e8);
+            box-shadow: 6px 6px 14px #d1d1d1,
+                -6px -6px 14px #ffffff;
+        }
 
-            <!-- Navbar -->
-            <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
-                navbar-scroll="true">
-                <div class="container-fluid py-1 px-3">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                            <li class="breadcrumb-item text-sm">
-                                <a class="opacity-5 text-dark" href="javascript:;">Pages</a>
-                            </li>
-                            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Dashboard</li>
-                        </ol>
-                        <h6 class="font-weight-bolder mb-0">Dashboard</h6>
-                    </nav>
+        .soft-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 4px 4px 10px #cfcfcf,
+                -4px -4px 10px #ffffff;
+        }
 
-                    <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
-                        <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-                            <div class="input-group">
-                                <span class="input-group-text text-body">
-                                    <i class="fas fa-search" aria-hidden="true"></i>
-                                </span>
-                                <input type="text" class="form-control" placeholder="Type here...">
-                            </div>
+        .icon-box {
+            padding: 12px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6dd5fa, #2980b9);
+            color: white;
+        }
+
+        .navbar-blur {
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.65) !important;
+        }
+
+        .logout-btn {
+            transition: color 0.2s;
+        }
+
+        .logout-btn:hover {
+            color: #e63946 !important;
+        }
+    </style>
+</head>
+
+<body class="g-sidenav-show bg-gray-100">
+
+    <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg">
+
+        <!-- Navbar -->
+        <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-sm navbar-blur border-radius-xl" id="navbarBlur">
+            <div class="container-fluid py-2 px-3">
+
+                <div>
+                    <ol class="breadcrumb bg-transparent mb-1 pb-0 pt-1 px-0">
+                        <li class="breadcrumb-item text-sm opacity-6"><a class="text-dark">Home</a></li>
+                        <li class="breadcrumb-item text-sm text-dark active">Dashboard</li>
+                    </ol>
+                    <h5 class="font-weight-bolder mb-0">Dashboard</h5>
+                </div>
+
+                <div class="collapse navbar-collapse mt-sm-0 mt-2" id="navbar">
+                    <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control" placeholder="Search...">
                         </div>
-
-                        <ul class="navbar-nav justify-content-end">
-                            <li class="nav-item d-flex align-items-center">
-                                <form action="{{ route('logout') }}" method="POST" class="m-0 p-0">
-                                    @csrf
-                                    <button type="submit"
-                                        class="nav-link text-body font-weight-bold px-0 border-0 bg-transparent">
-                                        <i class="fa fa-user me-sm-1"></i>
-                                        <span class="logout-btn">Logout</span>
-                                    </button>
-                                </form>
-                            </li>
-
-                            <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
-                                <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
-                                    <div class="sidenav-toggler-inner">
-                                        <i class="sidenav-toggler-line"></i>
-                                        <i class="sidenav-toggler-line"></i>
-                                        <i class="sidenav-toggler-line"></i>
-                                    </div>
-                                </a>
-                            </li>
-
-                            <li class="nav-item px-3 d-flex align-items-center">
-                                <a href="javascript:;" class="nav-link text-body p-0">
-                                    <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
-                                </a>
-                            </li>
-
-                            <li class="nav-item dropdown pe-2 d-flex align-items-center">
-                                <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fa fa-bell cursor-pointer"></i>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4"
-                                    aria-labelledby="dropdownMenuButton">
-                                    <li class="mb-2">
-                                        <a class="dropdown-item border-radius-md" href="javascript:;">
-                                            <div class="d-flex py-1">
-                                                <div class="my-auto">
-                                                    <img src="../assets/img/team-2.jpg" class="avatar avatar-sm me-3">
-                                                </div>
-                                                <div class="d-flex flex-column justify-content-center">
-                                                    <h6 class="text-sm font-weight-normal mb-1">
-                                                        <span class="font-weight-bold">New message</span> from Laur
-                                                    </h6>
-                                                    <p class="text-xs text-secondary mb-0">
-                                                        <i class="fa fa-clock me-1"></i> 13 minutes ago
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
                     </div>
+
+                    <ul class="navbar-nav justify-content-end ms-3">
+
+                        <li class="nav-item d-flex align-items-center">
+                            <form action="{{ route('logout') }}" method="POST" class="m-0 p-0">
+                                @csrf
+                                <button type="submit"
+                                    class="nav-link text-body font-weight-bold px-0 bg-transparent border-0">
+                                    <i class="fa fa-sign-out-alt fa-lg me-2"></i>
+                                    <span class="logout-btn">Logout</span>
+                                </button>
+                            </form>
+                        </li>
+
+                        <li class="nav-item px-3 d-flex align-items-center">
+                            <a class="nav-link text-body p-0">
+                                <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
+                            </a>
+                        </li>
+
+                    </ul>
                 </div>
-            </nav>
-            <!-- End Navbar -->
 
-            <!-- Section Card Statistik -->
-            <div class="container-fluid py-4">
+            </div>
+        </nav>
+        <!-- End Navbar -->
 
-                <div class="row">
-                    <!-- Film -->
-                    <div class="col-xl-6 col-sm-6 mb-4">
-                        <a href="{{ route('film.index') }}" class="text-decoration-none">
-                            <div class="card shadow-sm border-0" style="border-radius: 10px; cursor:pointer;">
-                                <div class="card-body d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h4 class="text-success mb-0">{{ $film }}</h4>
-                                        <small class="text-secondary">Data Film</small>
-                                    </div>
-                                    <i class="fas fa-film fa-2x text-secondary"></i>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
+        <!-- Statistik -->
+        <div class="container-fluid py-4">
 
-                    <!-- Genre -->
-                    <div class="col-xl-6 col-sm-6 mb-4">
-                        <a href="{{ route('genre.index') }}" class="text-decoration-none">
-                            <div class="card shadow-sm border-0" style="border-radius: 10px; cursor:pointer;">
-                                <div class="card-body d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h4 class="text-success mb-0">{{ $genre }}</h4>
-                                        <small class="text-secondary">Data Genre</small>
-                                    </div>
-                                    <i class="fas fa-palette fa-2x text-secondary"></i>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
+            <div class="row">
 
-                </div>
-                <div class="row">
-                    <!-- Negara -->
-                    <div class="col-xl-6 col-sm-6 mb-4">
-                        <a href="{{ route('negara.index') }}" class="text-decoration-none">
-                            <div class="card shadow-sm border-0" style="border-radius: 10px; cursor:pointer;">
-                                <div class="card-body d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h4 class="text-success mb-0">{{ $negara }}</h4>
-                                        <small class="text-secondary">Data Negara</small>
-                                    </div>
-                                    <i class="fas fa-globe fa-2x text-secondary"></i>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- User (Tanpa Link) -->
-                    <div class="col-xl-6 col-sm-6 mb-4">
-                        <div class="card shadow-sm border-0" style="border-radius: 10px;">
+                <!-- Film -->
+                <div class="col-xl-6 col-sm-6 mb-4">
+                    <a href="{{ route('film.index') }}" class="text-decoration-none">
+                        <div class="card soft-card shadow-sm border-0">
                             <div class="card-body d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h4 class="text-success mb-0">{{ $user }}</h4>
-                                    <small class="text-secondary">Data User</small>
+                                    <h4 class="text-primary mb-0">{{ $film }}</h4>
+                                    <small class="text-secondary">Total Film</small>
                                 </div>
-                                <i class="fas fa-user fa-2x text-secondary"></i>
+                                <div class="icon-box">
+                                    <i class="fas fa-film fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Genre -->
+                <div class="col-xl-6 col-sm-6 mb-4">
+                    <a href="{{ route('genre.index') }}" class="text-decoration-none">
+                        <div class="card soft-card shadow-sm border-0">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="text-primary mb-0">{{ $genre }}</h4>
+                                    <small class="text-secondary">Total Genre</small>
+                                </div>
+                                <div class="icon-box">
+                                    <i class="fas fa-palette fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <!-- Negara -->
+                <div class="col-xl-6 col-sm-6 mb-4">
+                    <a href="{{ route('negara.index') }}" class="text-decoration-none">
+                        <div class="card soft-card shadow-sm border-0">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="text-primary mb-0">{{ $negara }}</h4>
+                                    <small class="text-secondary">Total Negara</small>
+                                </div>
+                                <div class="icon-box">
+                                    <i class="fas fa-globe fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- User -->
+                <div class="col-xl-6 col-sm-6 mb-4">
+                    <div class="card soft-card shadow-sm border-0">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="text-primary mb-0">{{ $user }}</h4>
+                                <small class="text-secondary">Total User</small>
+                            </div>
+                            <div class="icon-box">
+                                <i class="fas fa-users fa-lg"></i>
                             </div>
                         </div>
                     </div>
-
                 </div>
 
-            </div>  
-        </main>
-
-        <!-- Fixed Plugin -->
-        <div class="fixed-plugin">
-            <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
-                <i class="fa fa-cog py-2"></i>
-            </a>
-            <div class="card shadow-lg">
-                <div class="card-header pb-0 pt-3">
-                    <div class="float-start">
-                        <h5 class="mt-3 mb-0">Soft UI Configurator</h5>
-                        <p>See our dashboard options.</p>
-                    </div>
-                    <div class="float-end mt-4">
-                        <button class="btn btn-link text-dark p-0 fixed-plugin-close-button">
-                            <i class="fa fa-close"></i>
-                        </button>
-                    </div>
-                </div>
-                <hr class="horizontal dark my-1">
-                <div class="card-body pt-sm-3 pt-0">
-                    <!-- Isi plugin konfigurator -->
-                </div>
             </div>
+
         </div>
 
-    </body>
+    </main>
 
-    </html>
+</body>
+
+</html>
 @endsection

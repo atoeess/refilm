@@ -8,6 +8,7 @@ use App\Models\Komentar;
 use App\Models\Negara;
 use App\Models\Rating;
 use App\Models\Highlight;
+use App\Models\Tahun;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -31,8 +32,10 @@ class FilmController extends Controller
     {
         $genres  = Genre::all();
         $negaras = Negara::all();
+        $tahuns = Tahun::all();
 
-        return view('film.create', compact('genres', 'negaras'));
+
+        return view('film.create', compact('genres', 'negaras',  'tahuns'));
     }
 
     /**
@@ -101,8 +104,27 @@ class FilmController extends Controller
             ->limit(6)
             ->get();
 
+        $series = Film::where('main_series', $film->main_series)
+            ->where('id', '!=', $film->id)
+            ->orderBy('tahun', 'asc')
+            ->get();
 
-        return view('film.detail', compact('film', 'komentars', 'highlights', 'rekomendasi'));
+        // ⭐ Ambil rating user
+        $userRating = null;
+        if (auth()->check()) {
+            $userRating = Rating::where('id_film', $film->id)
+                ->where('id_user', auth()->id())
+                ->value('nilai_rating');
+        }
+
+        return view('film.detail', compact(
+            'film',
+            'komentars',
+            'highlights',
+            'rekomendasi',
+            'series',
+            'userRating'
+        ));
     }
 
     /**
@@ -110,11 +132,12 @@ class FilmController extends Controller
      */
     public function edit($id)
     {
-        $film    = Film::with(['genres', 'negara'])->findOrFail($id);
+        $film    = Film::with(['genres', 'negara', 'tahuns'])->findOrFail($id);
         $genres  = Genre::all();
         $negaras = Negara::all();
+        $tahuns = Tahun::all();
 
-        return view('film.edit', compact('film', 'genres', 'negaras'));
+        return view('film.edit', compact('film', 'genres', 'negaras', 'tahuns'));
     }
 
     /**
@@ -188,6 +211,7 @@ class FilmController extends Controller
         $query = $request->q;
 
         $films = Film::with(['genres', 'negara'])
+            ->withAvg('ratings', 'nilai_rating')
             ->where('judul', 'like', "%{$query}%")
             ->get();
 
@@ -229,7 +253,7 @@ class FilmController extends Controller
         // Ambil semua film yang punya genre ini
         $films = Film::whereHas('genres', function ($q) use ($id) {
             $q->where('genres.id', $id);
-        })->paginate(12);
+        })->withAvg('ratings', 'nilai_rating')->paginate(12);
 
         $genres = Genre::all();
         $negaras = Negara::all();
@@ -248,5 +272,20 @@ class FilmController extends Controller
         $negaras = Negara::all();
 
         return view('film.negara', compact('films', 'negara', 'genres', 'negaras'));
+    }
+
+    public function byTahun($tahun)
+    {
+        $films = Film::where('tahun', $tahun)
+            ->withAvg('ratings', 'nilai_rating')
+            ->paginate(12);
+
+        $genres = Genre::all();
+        $negaras = Negara::all();
+
+        // untuk dropdown tahun (ambil tahun unik)
+        $tahuns = Film::select('tahun')->distinct()->orderBy('tahun', 'desc')->get();
+
+        return view('film.byTahun', compact('films', 'genres', 'negaras', 'tahuns', 'tahun'));
     }
 }

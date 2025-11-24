@@ -12,6 +12,8 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HighlightController;
 use App\Http\Controllers\KomentarController;
+use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\TahunController;
 
 // ----------------------------------------------------
 // 🔹 HALAMAN PUBLIK
@@ -24,10 +26,20 @@ Route::get('/negara/{id}', [FilmController::class, 'showByNegara'])->name('negar
 Route::post('/film/rating', [FilmController::class, 'rating'])->name('film.rating');
 Route::get('/genre/{id}', [FilmController::class, 'byGenre'])->name('genre.film');
 Route::get('/negara/{id}', [FilmController::class, 'bynegara'])->name('negara.film');
+Route::get('/tahun/{tahun}', [FilmController::class, 'byTahun'])->name('tahun.film');
 Route::post('/rating', [RatingController::class, 'store'])->name('rating.store');
 Route::get('/rekomendasi', [HomeController::class, 'rekomendasi'])->name('rekomendasi');
+Route::get('/series/{slug}', [FilmController::class, 'seriesPage'])->name('film.series');
 
 
+
+// toggle favorite
+Route::post('/favorite/toggle', [FavoriteController::class, 'toggle'])
+   ->name('favorite.toggle');
+
+// halaman daftar favorit
+Route::get('/favorite', [FavoriteController::class, 'index'])
+   ->name('favorite.index');
 
 
 
@@ -93,6 +105,14 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->group(function () {
     Route::get('/highlight/{id}/edit', [HighlightController::class, 'edit'])->name('highlight.edit');
     Route::put('/highlight/{id}', [HighlightController::class, 'update'])->name('highlight.update');
     Route::delete('/highlight/{id}', [HighlightController::class, 'destroy'])->name('highlight.destroy');
+
+    //Tahun
+    Route::get('/tahun', [TahunController::class, 'index'])->name('tahun.index');
+    Route::get('/tahun/create', [TahunController::class, 'create'])->name('tahun.create');
+    Route::post('/tahun/store', [TahunController::class, 'store'])->name('tahun.store');
+    Route::get('/tahun/{id}/edit', [TahunController::class, 'edit'])->name('tahun.edit');
+    Route::put('/tahun/{id}', [TahunController::class, 'update'])->name('tahun.update');
+    Route::delete('/tahun/{id}', [TahunController::class, 'destroy'])->name('tahun.destroy');
 
     // Produk
     Route::resource('product', ProductController::class);

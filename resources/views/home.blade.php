@@ -27,7 +27,6 @@
         </form>
 
         <!-- 🔹 Dropdown & Auth Buttons -->
-        <!-- 🔹 Dropdown & Auth Buttons -->
         <div class="flex space-x-3">
 
             {{-- Dropdown Genre --}}
@@ -71,6 +70,45 @@
                     @endforeach
                 </div>
             </div>
+
+            <!-- Dropdown Tahun -->
+            <div x-data="{ openTahun: false }" class="relative">
+                <button @click="openTahun = !openTahun"
+                    class="bg-blue-500/80 px-3 py-1 rounded text-sm text-white font-semibold flex items-center space-x-1 hover:bg-blue-500 transition">
+                    <span>Tahun</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform transition-transform duration-200"
+                        :class="{ 'rotate-180': openTahun }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <div x-show="openTahun" @click.away="openTahun = false" x-transition
+                    class="absolute bg-[#1e1e1e] border border-gray-700 rounded-lg mt-2 w-40 shadow-lg z-50 py-2">
+
+                    @foreach ($tahuns as $tahun)
+                        <a href="{{ route('tahun.film', $tahun->tahun) }}"
+                            class="block px-3 py-1 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition">
+                            {{ $tahun->tahun }}
+                        </a>
+                    @endforeach
+
+                </div>
+            </div>
+
+
+            {{-- Tombol Favorite --}}
+            <a href="{{ route('favorite.index') }}"
+                class="bg-pink-500/80 hover:bg-pink-500 px-3 py-1 rounded text-sm font-semibold flex items-center space-x-1 transition">
+
+                <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" class="w-5 h-5">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+            2 6 3.5 4 5.5 4c1.74 0 3.41 1.01 4.13 2.44h.74
+            C12.09 5.01 13.76 4 15.5 4 17.5 4 19 6
+            19 8.5c0 3.78-3.4 6.86-8.55
+            11.54L12 21.35z" />
+                </svg>
+            </a>
+
 
             {{-- 🔹 Login / Logout --}}
             @guest
@@ -153,7 +191,35 @@
         semua: @js($filmsSemua),
         populer: @js($filmsPopuler),
         baru: @js($filmsBaru),
+
+        favorites: @js($favoritesUserIds ?? []),
+        isLoggedIn: {{ Auth::check() ? 'true' : 'false' }},
+
+        toggleFavorite(id) {
+            if (!this.isLoggedIn) {
+                window.location.href = '{{ route('login') }}';
+                return;
+            }
+
+            fetch('{{ route('favorite.toggle') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ id_film: id })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.favorite) {
+                        this.favorites.push(id);
+                    } else {
+                        this.favorites = this.favorites.filter(f => f !== id);
+                    }
+                });
+        }
     }" class="px-8 py-10">
+
 
         <h2 class="text-4xl font-bold mb-4 text-blue-400">Rekomendasi Film</h2>
 
@@ -172,6 +238,7 @@
             </button>
         </div>
 
+
         <section class="px-4 py-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
 
             <template x-for="item in (tab === 'semua' ? semua : tab === 'populer' ? populer : baru)"
@@ -179,7 +246,21 @@
 
                 <div class="bg-[#1a1a1a] rounded-lg overflow-hidden shadow-md hover:scale-105 transition w-full">
                     <div class="relative">
+
+                        <!-- Poster -->
                         <img :src="'/storage/fotos/' + item.foto" class="w-full h-44 object-cover">
+
+                        <!-- Tombol Favorite -->
+                        <button @click="toggleFavorite(item.id)"
+                            class="absolute top-1 right-1 bg-black/60 p-2 rounded-full hover:bg-black transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                :stroke="favorites.includes(item.id) ? 'red' : 'white'" stroke-width="1.5"
+                                viewBox="0 0 24 24" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.153-4.312 2.813C11.285 4.903 9.623 3.75 7.688 3.75 5.099 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                            </svg>
+                        </button>
+
 
                         <!-- Rating -->
                         <div

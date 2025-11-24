@@ -89,6 +89,25 @@
             </li>
 
             <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('tahun.*') ? 'active bg-gradient-primary text-white' : '' }}"
+                    href="{{ route('tahun.index') }}">
+                    <div
+                        class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                        {{-- SVG tahun --}}
+                        <svg width="12px" height="12px" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg">
+                            <title>box-3d</title>
+                            <g fill="#FFFFFF">
+                                <path class="color-background"
+                                    d="M22.76,19.31 L38.9,11.24 C39.39,10.99 39.59,10.39 39.35,9.9 L20.27,0.14 C19.91,-0.05 19.47,-0.05 19.1,0.14 L3.1,8.14 C2.61,8.39 2.41,8.99 2.65,9.48 L21.86,19.31 C22.15,19.45 22.48,19.45 22.76,19.31 Z">
+                                </path>
+                            </g>
+                        </svg>
+                    </div>
+                    <span class="nav-link-text ms-1">Tahun</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('highlight.*') ? 'active bg-gradient-primary text-white' : '' }}"
                     href="{{ route('highlight.index') }}">
                     <div

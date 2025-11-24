@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('film', function (Blueprint $table) {
-            $table->string('slug')->unique()->after('judul');
-        });
+        // Schema::table('film', function (Blueprint $table) {
+        //     $table->string('slug')->unique()->after('judul');
+        // });
     }
 
     /**
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('film', function (Blueprint $table) {
-            //
-        });
+        // Schema::table('film', function (Blueprint $table) {
+        //     //
+        // });
     }
 };

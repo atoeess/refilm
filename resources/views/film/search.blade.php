@@ -42,6 +42,7 @@
             </div>
         @else
             {{-- 🔹 Grid hasil pencarian --}}
+
             <section x-data="{ items: @js($films) }"
                 class="px-4 py-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
 

@@ -39,8 +39,11 @@
                         {{-- Tahun --}}
                         <div>
                             <label class="block mb-2 text-sm font-semibold text-slate-700">Tahun</label>
-                            <input type="text" name="tahun" class="w-full rounded-xl border px-4 py-3 text-sm"
-                                placeholder="2024">
+                            <select name="tahun" class="w-full rounded-xl border px-4 py-3 text-sm">
+                                @foreach ($tahuns as $tahun)
+                                    <option value="{{ $tahun->id }}">{{ $tahun->tahun }}</option>
+                                @endforeach
+                            </select>
                         </div>
 
                         {{-- Negara --}}

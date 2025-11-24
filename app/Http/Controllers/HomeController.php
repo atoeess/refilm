@@ -6,25 +6,37 @@ use App\Models\Film;
 use App\Models\Genre;
 use App\Models\Negara;
 use App\Models\Highlight;
+use App\Models\Favorite;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 
 class HomeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $films = Film::withAvg('ratings', 'nilai_rating')->get();
 
+        // 🔥 Favorite user
+        $favoritesUserIds = Favorite::where('id_user', Auth::id())
+            ->pluck('id_film')
+            ->toArray();
+
+        // 🔥 Dropdown tahun
+        $tahuns = Film::select('tahun')
+            ->distinct()
+            ->orderBy('tahun', 'desc')
+            ->get();
+
         return view('home', [
             'genres' => Genre::all(),
             'negaras' => Negara::all(),
+            'tahuns' => $tahuns, // ⬅️ DITAMBAHKAN
+
             'highlights' => Highlight::with('film')->latest()->get(),
 
             'films' => $films,
-            'filmsSemua' => $films,   // ⭐ perbaikan di sini
+            'filmsSemua' => $films,
             'filmsPopuler' => Film::withAvg('ratings', 'nilai_rating')
                 ->orderByDesc('ratings_avg_nilai_rating')
                 ->get(),
@@ -32,11 +44,10 @@ class HomeController extends Controller
             'filmsBaru' => Film::withAvg('ratings', 'nilai_rating')
                 ->orderByDesc('tahun')
                 ->get(),
+
+            'favoritesUserIds' => $favoritesUserIds
         ]);
     }
-
-
-
 
 
     public function rekomendasi(Request $request)
@@ -58,7 +69,6 @@ class HomeController extends Controller
                 ->paginate(12);
         }
 
-        // 🔹 Data untuk Alpine (tanpa pagination)
         $filmsPopuler = Film::withCount('ratings')
             ->withAvg('ratings', 'nilai_rating')
             ->orderBy('ratings_count', 'desc')
@@ -75,15 +85,19 @@ class HomeController extends Controller
             ->take(30)
             ->get();
 
+        $favoritesUserIds = Favorite::where('id_user', Auth::id())
+            ->pluck('id_film')
+            ->toArray();
+
         return view('rekomendasi', [
-            'films' => $films,           // dipakai server-side
-            'filmsSemua' => $filmsSemua, // 🔥 FIX WAJIB
+            'films' => $films,
+            'filmsSemua' => $filmsSemua,
             'filmsPopuler' => $filmsPopuler,
             'filmsBaru' => $filmsBaru,
-            'tab' => $tab
+            'tab' => $tab,
+            'favoritesUserIds' => $favoritesUserIds
         ]);
     }
-
 
 
 

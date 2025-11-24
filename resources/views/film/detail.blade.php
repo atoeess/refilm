@@ -131,11 +131,71 @@
 
 
 
-        {{-- Sinopsis --}}
-        <div class="pt-5">
-            <h1 class="text-2xl font-semibold text-white mb-2">Sinopsis</h1>
-            <p class="text-gray-300 leading-relaxed">{{ $film->sinopsis }}</p>
+        {{-- SINOPSIS & SERIES SEJAJAR --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mt-10">
+
+            {{-- SINOPSIS (kolom besar) --}}
+            <div class="md:col-span-2">
+                <h1 class="text-2xl font-semibold text-white mb-2">Sinopsis</h1>
+                <p class="text-gray-300 leading-relaxed">{{ $film->sinopsis }}</p>
+            </div>
+
+            {{-- SERIES TERKAIT (kolom kanan) --}}
+           @if ($series->count() > 1)
+    <div
+        class="space-y-5 h-[440px] overflow-y-auto pr-2
+        scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
+
+        <h2 class="text-lg font-semibold text-gray-100 tracking-wide">
+            Series Lainnya
+        </h2>
+
+        <div class="space-y-5">
+            @foreach ($series as $s)
+                @if ($s->id !== $film->id)
+                    <a href="{{ route('film.detail', $s->slug) }}" class="block group">
+
+                        {{-- Card Poster (SAMAAAA seperti rekomendasi) --}}
+                        <div
+                            class="w-full h-40 rounded-xl overflow-hidden border border-gray-700/50
+                            shadow-md bg-gray-800/30 backdrop-blur-sm
+                            transition duration-300 ease-out
+                            group-hover:scale-[1.03] group-hover:shadow-lg group-hover:border-gray-500/50">
+
+                            <img src="{{ asset('storage/fotos/' . $s->foto) }}"
+                                class="w-full h-full object-cover transition duration-300 group-hover:brightness-110">
+
+                            {{-- Badge Tahun --}}
+                            <span
+                                class="absolute top-2 right-2 text-xs bg-black/40 backdrop-blur-md
+                                px-2 py-1 rounded-full border border-white/10 text-white">
+                                {{ $s->tahun }}
+                            </span>
+                        </div>
+
+                        <p
+                            class="mt-3 text-white text-sm font-semibold leading-tight
+                            group-hover:text-purple-300 transition">
+                            {{ $s->judul }}
+                        </p>
+
+                        <p class="text-xs text-gray-400">
+                            {{ $s->genres->pluck('nama_genre')->join(', ') }}
+                        </p>
+
+                    </a>
+                @endif
+            @endforeach
         </div>
+
+    </div>
+@endif
+
+
+
+        </div>
+
+
 
         {{-- Rating Dinamis --}}
         <div class="pt-5">
@@ -238,40 +298,64 @@
 @endsection
 
 @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const stars = document.querySelectorAll('.stars');
-            const avgText = document.getElementById('avg-rating');
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const stars = document.querySelectorAll('.stars');
+    const avgText = document.getElementById('avg-rating');
 
-            stars.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const rating = this.dataset.star;
+    const isLoggedIn = {{ auth()->check() ? 'true' : 'false' }};
+    const userRating = {{ $userRating ?? 'null' }}; // ⭐ rating user
 
-                    // update tampilan bintang
-                    stars.forEach(s => {
-                        const val = s.dataset.star;
-                        s.querySelector('path').setAttribute('fill', val <= rating ?
-                            '#fffe3b' : '#fff');
-                    });
+    // ⬅⬅⬅ BAGIAN UNTUK MENYALAKAN BINTANG SAAT RELOAD
+    if (userRating) {
+        stars.forEach(s => {
+            const val = s.dataset.star;
+            s.querySelector('path').setAttribute(
+                'fill',
+                val <= userRating ? '#fffe3b' : '#fff'
+            );
+        });
+    }
+    // ⬅⬅⬅ SAMPAI SINI
 
-                    // kirim ke backend
-                    fetch("{{ route('rating.store') }}", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                            },
-                            body: JSON.stringify({
-                                id_film: {{ $film->id }},
-                                nilai_rating: rating
-                            })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            avgText.innerText = `(${data.average.toFixed(1)})`;
-                        });
-                });
+    stars.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const rating = this.dataset.star;
+
+            if (!isLoggedIn) {
+                window.location.href = "{{ route('login') }}";
+                return;
+            }
+
+            // update tampilan bintang
+            stars.forEach(s => {
+                const val = s.dataset.star;
+                s.querySelector('path').setAttribute(
+                    'fill',
+                    val <= rating ? '#fffe3b' : '#fff'
+                );
+            });
+
+            // kirim rating ke backend
+            fetch("{{ route('rating.store') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({
+                    id_film: {{ $film->id }},
+                    nilai_rating: rating
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                avgText.innerText = `(${data.average.toFixed(1)})`;
             });
         });
-    </script>
+    });
+});
+</script>
+
+
 @endpush
