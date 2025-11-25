@@ -96,43 +96,123 @@
             </div>
 
 
-            {{-- Tombol Favorite --}}
-            <a href="{{ route('favorite.index') }}"
-                class="bg-pink-500/80 hover:bg-pink-500 px-3 py-1 rounded text-sm font-semibold flex items-center space-x-1 transition">
-
-                <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" class="w-5 h-5">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
-            2 6 3.5 4 5.5 4c1.74 0 3.41 1.01 4.13 2.44h.74
-            C12.09 5.01 13.76 4 15.5 4 17.5 4 19 6
-            19 8.5c0 3.78-3.4 6.86-8.55
-            11.54L12 21.35z" />
-                </svg>
-            </a>
-
-
             {{-- 🔹 Login / Logout --}}
-            @guest
-                <a href="{{ route('login') }}"
-                    class="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded text-sm text-white font-semibold transition-all duration-200">
-                    Sign In
-                </a>
-            @endguest
+            <!-- USER DROPDOWN -->
+            <div x-data="{ open: false }" class="relative">
+                @guest
+                    <!-- Belum login -->
+                    <button @click="open = !open"
+                        class="bg-blue-500/80 hover:bg-blue-500 px-3 py-1 rounded text-sm text-white font-semibold flex items-center space-x-1 transition">
+                        <span>Sign In</span>
 
-            @auth
-                @if (Auth::user()->role === 'admin')
+                        <!-- Icon user -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-80" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M5.121 17.804A9 9 0 1118.88 6.196M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                @else
+                    <!-- Sudah login -->
+                    <button @click="open = !open"
+                        class="bg-blue-500/80 hover:bg-blue-500 px-3 py-1 rounded text-sm text-white font-semibold flex items-center space-x-2 transition">
+
+                        <!-- Foto profil kecil (fallback ke icon) -->
+                        @if (Auth::user()->profile_photo_path ?? false)
+                            <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}"
+                                class="w-6 h-6 rounded-full object-cover">
+                        @else
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-90" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5.121 17.804A9 9 0 1118.88 6.196M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        @endif
+
+                        <span>{{ Auth::user()->name }}</span>
+
+                        <!-- Chevron -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform transition-transform"
+                            :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                @endguest
+
+                <!-- DROPDOWN -->
+                <div x-show="open" x-transition @click.outside="open = false"
+                    class="absolute right-0 mt-2 w-48 bg-[#1e1e1e] border border-gray-700 rounded-lg overflow-hidden shadow-lg z-50">
+
+                    @auth
+                        <a href="{{ route('profile.show') }}"
+                            class="flex items-center px-4 py-2 text-gray-200 hover:bg-gray-700 transition">
+
+                            <!-- icon -->
+                            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M5.121 17.804A9 9 0 1118.88 6.196" />
+                            </svg>
+                            Profile
+                        </a>
+                    @endauth
+
+                    <!-- FAVORIT (selalu tampil) -->
+                    <a href="{{ route('favorite.index') }}"
+                        class="flex items-center px-4 py-2 text-gray-200 hover:bg-gray-700 transition">
+
+                        <!-- icon -->
+                        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                        </svg>
+                        Daftar Favorit
+                    </a>
+
+                    @auth
+                        @if (Auth::user()->role === 'admin')
                     <a href="{{ route('dashboard') }}"
-                        class="bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-sm text-white font-semibold transition-all duration-200">
+                        class="flex items-center px-4 py-2 text-gray-200 hover:bg-gray-700 transition">
+
+                        <!-- icon -->
+                        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                        </svg>
                         Dashboard Admin
                     </a>
-                @endif
+                    @endif
 
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button type="submit"
-                        class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm text-white font-semibold transition-all duration-200">
-                        Logout
-                    </button>
-                </form>
+                    @guest
+                        <!-- LOGIN jika belum login -->
+                        <a href="{{ route('login') }}"
+                            class="flex items-center px-4 py-2 text-gray-200 hover:bg-gray-700 transition">
+
+                            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 3h4v4M10 14l10-10" />
+                            </svg>
+                            Login
+                        </a>
+                    @else
+                        <!-- LOGOUT -->
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit"
+                                class="w-full flex items-center text-left px-4 py-2 text-gray-200 hover:bg-gray-700 transition">
+
+                                <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7" />
+                                </svg>
+                                Logout
+                            </button>
+                        </form>
+                    @endguest
+                </div>
+            </div>
+
+
             @endauth
         </div>
 
@@ -312,6 +392,46 @@
         </section>
 
     </div>
+
+    <footer class="w-full bg-[#111827] text-gray-300 mt-20 border-t border-gray-700">
+        <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between">
+
+            <!-- LOGO FILM ROLL -->
+            <div class="flex items-center space-x-3">
+                <div class="relative w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+
+                    <!-- lubang kiri -->
+                    <div class="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white/80"></div>
+
+                    <!-- lubang kanan -->
+                    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white/80"></div>
+
+                    <!-- strip film -->
+                    <div class="w-4 h-4 bg-white rounded-sm"></div>
+
+                </div>
+                <span class="text-xl font-semibold text-white tracking-wide">ReFilm</span>
+            </div>
+
+            <!-- NAVIGASI -->
+            <nav class="flex space-x-6 mt-6 md:mt-0 text-sm">
+                <a href="/" class="hover:text-white transition">Beranda</a>
+            </nav>
+
+            <!-- SOSIAL -->
+            <div class="flex space-x-5 mt-6 md:mt-0 text-sm">
+                <a class="hover:text-white transition cursor-pointer">IG</a>
+                <a class="hover:text-white transition cursor-pointer">Email</a>
+                <a class="hover:text-white transition cursor-pointer">Git</a>
+            </div>
+
+        </div>
+
+        <div class="text-center py-5 border-t border-gray-700 text-gray-500 text-xs tracking-wider">
+            © 2025 ReFilm — Semua Hak Dilindungi.
+        </div>
+    </footer>
+
 
 </body>
 

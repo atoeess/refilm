@@ -14,6 +14,7 @@ use App\Http\Controllers\HighlightController;
 use App\Http\Controllers\KomentarController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\TahunController;
+use App\Http\Controllers\ProfileController;
 
 // ----------------------------------------------------
 // 🔹 HALAMAN PUBLIK
@@ -35,11 +36,11 @@ Route::get('/series/{slug}', [FilmController::class, 'seriesPage'])->name('film.
 
 // toggle favorite
 Route::post('/favorite/toggle', [FavoriteController::class, 'toggle'])
-   ->name('favorite.toggle');
+    ->name('favorite.toggle');
 
 // halaman daftar favorit
 Route::get('/favorite', [FavoriteController::class, 'index'])
-   ->name('favorite.index');
+    ->name('favorite.index');
 
 
 
@@ -58,6 +59,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('post-komen', [KomentarController::class, 'store'])->name('komen.post');
     Route::delete('/komentar/{id}', [KomentarController::class, 'destroy'])->name('komen.delete');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
 });
 
 // ----------------------------------------------------
@@ -113,6 +115,15 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->group(function () {
     Route::get('/tahun/{id}/edit', [TahunController::class, 'edit'])->name('tahun.edit');
     Route::put('/tahun/{id}', [TahunController::class, 'update'])->name('tahun.update');
     Route::delete('/tahun/{id}', [TahunController::class, 'destroy'])->name('tahun.destroy');
+
+    // Menu Rating Admin
+    Route::get('/rating', [RatingController::class, 'index'])->name('rating.index');
+    Route::get('/rating/{film_id}', [RatingController::class, 'show'])->name('rating.show');
+
+    //komentar
+    Route::get('/komentar', [KomentarController::class, 'index'])->name('komentar.index');
+    Route::get('/komentar/{id_film}', [KomentarController::class, 'show'])->name('komentar.show');
+
 
     // Produk
     Route::resource('product', ProductController::class);

@@ -55,4 +55,9 @@ class Film extends Model
     {
         return $this->ratings()->avg('nilai_rating') ?? 0;
     }
+
+    public function komentars()
+    {
+        return $this->hasMany(Komentar::class, 'id_film');
+    }
 }

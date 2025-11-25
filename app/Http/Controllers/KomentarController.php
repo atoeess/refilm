@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Komentar;
+use App\Models\Film;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,7 +14,10 @@ class KomentarController extends Controller
      */
     public function index()
     {
-        //
+        // daftar film + jumlah komentar
+        $films = Film::withCount('komentars')->get();
+
+        return view('komentar.index', compact('films'));
     }
 
     /**
@@ -41,10 +45,21 @@ class KomentarController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $film = Film::findOrFail($id);
+
+        $komentars = Komentar::where('id_film', $id)
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('komentar.show', [
+            'film' => $film,
+            'komentars' => $komentars
+        ]);
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -65,18 +80,17 @@ class KomentarController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-   public function destroy($id)
-{
-    $komentar = Komentar::findOrFail($id);
+    public function destroy($id)
+    {
+        $komentar = Komentar::findOrFail($id);
 
-    // Pastikan hanya pemilik komentar yang bisa menghapus
-    if ($komentar->id_user!== auth()->id()) {
-        abort(403, 'Tidak memiliki izin.');
+        // Pastikan hanya pemilik komentar yang bisa menghapus
+        if ($komentar->id_user !== auth()->id()) {
+            abort(403, 'Tidak memiliki izin.');
+        }
+
+        $komentar->delete();
+
+        return back()->with('success', 'Komentar berhasil dihapus.');
     }
-
-    $komentar->delete();
-
-    return back()->with('success', 'Komentar berhasil dihapus.');
-}
-
 }

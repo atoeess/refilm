@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Rating;
+use App\Models\Film;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,4 +31,28 @@ class RatingController extends Controller
             'average' => $rating->film->averageRating()
         ]);
     }
+
+    // Menampilkan semua film yang punya rating
+    public function index()
+    {
+        $films = Film::withCount('ratings')
+            ->orderBy('ratings_count', 'desc')
+            ->get();
+
+        return view('rating.index', compact('films'));
+    }
+
+    // Menampilkan semua rating dari 1 film
+   public function show($id)
+{
+    $film = Film::findOrFail($id);
+
+    $ratings = Rating::where('id_film', $id)
+        ->with('user')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return view('rating.show', compact('film', 'ratings'));
+}
+
 }

@@ -266,7 +266,8 @@ class FilmController extends Controller
     {
         $negara = Negara::findOrFail($id);
 
-        $films = Film::where('id_negara', $id)->paginate(12);
+        $films = Film::where('id_negara', $id)
+        ->withAvg('ratings', 'nilai_rating')->paginate(12);
 
         $genres = Genre::all();
         $negaras = Negara::all();

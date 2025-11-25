@@ -84,6 +84,22 @@
                 </li>
 
                 <li>
+                    <a href="{{ route("rating.index")}}"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+                        <i class="fa-solid fa-star"></i>
+                        Rating
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route("komentar.index")}}"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+                        <i class="fa-solid fa-star"></i>
+                        Komentar
+                    </a>
+                </li>
+
+                <li>
                     <a href="{{ route("home")}}"
                         class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
                         <i class="fa-solid fa-star"></i>
