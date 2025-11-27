@@ -42,6 +42,9 @@ Route::post('/favorite/toggle', [FavoriteController::class, 'toggle'])
 Route::get('/favorite', [FavoriteController::class, 'index'])
     ->name('favorite.index');
 
+    Route::delete('/favorite/{id}', [FavoriteController::class, 'remove'])
+    ->name('favorite.remove');
+
 
 
 
@@ -123,6 +126,8 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->group(function () {
     //komentar
     Route::get('/komentar', [KomentarController::class, 'index'])->name('komentar.index');
     Route::get('/komentar/{id_film}', [KomentarController::class, 'show'])->name('komentar.show');
+
+
 
 
     // Produk

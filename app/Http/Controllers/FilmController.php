@@ -140,6 +140,8 @@ class FilmController extends Controller
         return view('film.edit', compact('film', 'genres', 'negaras', 'tahuns'));
     }
 
+
+
     /**
      * UPDATE FILM
      */
@@ -287,6 +289,6 @@ class FilmController extends Controller
         // untuk dropdown tahun (ambil tahun unik)
         $tahuns = Film::select('tahun')->distinct()->orderBy('tahun', 'desc')->get();
 
-        return view('film.byTahun', compact('films', 'genres', 'negaras', 'tahuns', 'tahun'));
+        return view('film.tahun', compact('films', 'genres', 'negaras', 'tahuns', 'tahun'));
     }
 }

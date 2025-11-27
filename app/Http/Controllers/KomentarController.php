@@ -80,17 +80,23 @@ class KomentarController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
-    {
-        $komentar = Komentar::findOrFail($id);
+   public function destroy($id)
+{
+    $komentar = Komentar::findOrFail($id);
 
-        // Pastikan hanya pemilik komentar yang bisa menghapus
-        if ($komentar->id_user !== auth()->id()) {
-            abort(403, 'Tidak memiliki izin.');
-        }
-
+    // Jika user admin → bisa hapus apa saja
+    if (auth()->user()->role === 'admin') {
         $komentar->delete();
-
-        return back()->with('success', 'Komentar berhasil dihapus.');
+        return redirect()->back()->with('success', 'Komentar berhasil dihapus (admin).');
     }
+
+    // Jika user biasa → hanya boleh hapus komentarnya sendiri
+    if ($komentar->id_user !== auth()->id()) {
+        return redirect()->back()->with('error', 'Kamu tidak punya izin menghapus komentar ini.');
+    }
+
+    $komentar->delete();
+    return redirect()->back()->with('success', 'Komentar berhasil dihapus.');
+}
+
 }

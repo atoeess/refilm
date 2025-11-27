@@ -60,4 +60,9 @@ class Film extends Model
     {
         return $this->hasMany(Komentar::class, 'id_film');
     }
+
+    public function tahuns()
+    {
+        return $this->belongsTo(Tahun::class, 'id_tahun');
+    }
 }

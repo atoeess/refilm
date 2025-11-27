@@ -9,5 +9,10 @@ class Tahun extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['tahun'];
+    protected $fillable = ['tahuns'];
+
+    public function films()
+    {
+        return $this->hasMany(Film::class, 'tahuns');
+    }
 }

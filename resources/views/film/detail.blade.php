@@ -25,6 +25,35 @@
 
                 <h1 class="text-4xl font-extrabold text-white">{{ $film->judul }}</h1>
 
+                {{-- FAVORITE BUTTON --}}
+                <div class="mt-2">
+                    @php
+                        $isFavorite = auth()->check()
+                            ? auth()->user()->favorites()->where('id_film', $film->id)->exists()
+                            : false;
+                    @endphp
+
+                    <form
+                        action="{{ $isFavorite ? route('favorite.remove', $film->id) : route('favorite.toggle', $film->id) }}"
+                        method="POST" class="inline">
+                        @csrf
+
+                        @if ($isFavorite)
+                            @method('DELETE')
+                        @endif
+
+                        <button onclick="return confirm('{{ $isFavorite ? 'Hapus dari favorit?' : 'Tambah ke favorit?' }}')"
+                            class="flex items-center gap-2 bg-pink-600/20 hover:bg-pink-600/30 text-pink-400 px-4 py-2 rounded-full transition">
+
+                            @if ($isFavorite)
+                                ❤️ <span class="text-sm">Favorit</span>
+                            @else
+                                🤍 <span class="text-sm">Tambah Favorit</span>
+                            @endif
+                        </button>
+                    </form>
+                </div>
+
                 <p class="text-gray-400 italic max-w-lg leading-relaxed">
                     {{ $film->deskripsi }}
                 </p>
@@ -141,55 +170,55 @@
             </div>
 
             {{-- SERIES TERKAIT (kolom kanan) --}}
-           @if ($series->count() > 1)
-    <div
-        class="space-y-5 h-[440px] overflow-y-auto pr-2
+            @if ($series->count() > 1)
+                <div
+                    class="space-y-5 h-[440px] overflow-y-auto pr-2
         scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
 
-        <h2 class="text-lg font-semibold text-gray-100 tracking-wide">
-            Series Lainnya
-        </h2>
+                    <h2 class="text-lg font-semibold text-gray-100 tracking-wide">
+                        Series Lainnya
+                    </h2>
 
-        <div class="space-y-5">
-            @foreach ($series as $s)
-                @if ($s->id !== $film->id)
-                    <a href="{{ route('film.detail', $s->slug) }}" class="block group">
+                    <div class="space-y-5">
+                        @foreach ($series as $s)
+                            @if ($s->id !== $film->id)
+                                <a href="{{ route('film.detail', $s->slug) }}" class="block group">
 
-                        {{-- Card Poster (SAMAAAA seperti rekomendasi) --}}
-                        <div
-                            class="w-full h-40 rounded-xl overflow-hidden border border-gray-700/50
+                                    {{-- Card Poster (SAMAAAA seperti rekomendasi) --}}
+                                    <div
+                                        class="w-full h-40 rounded-xl overflow-hidden border border-gray-700/50
                             shadow-md bg-gray-800/30 backdrop-blur-sm
                             transition duration-300 ease-out
                             group-hover:scale-[1.03] group-hover:shadow-lg group-hover:border-gray-500/50">
 
-                            <img src="{{ asset('storage/fotos/' . $s->foto) }}"
-                                class="w-full h-full object-cover transition duration-300 group-hover:brightness-110">
+                                        <img src="{{ asset('storage/fotos/' . $s->foto) }}"
+                                            class="w-full h-full object-cover transition duration-300 group-hover:brightness-110">
 
-                            {{-- Badge Tahun --}}
-                            <span
-                                class="absolute top-2 right-2 text-xs bg-black/40 backdrop-blur-md
+                                        {{-- Badge Tahun --}}
+                                        <span
+                                            class="absolute top-2 right-2 text-xs bg-black/40 backdrop-blur-md
                                 px-2 py-1 rounded-full border border-white/10 text-white">
-                                {{ $s->tahun }}
-                            </span>
-                        </div>
+                                            {{ $s->tahun }}
+                                        </span>
+                                    </div>
 
-                        <p
-                            class="mt-3 text-white text-sm font-semibold leading-tight
+                                    <p
+                                        class="mt-3 text-white text-sm font-semibold leading-tight
                             group-hover:text-purple-300 transition">
-                            {{ $s->judul }}
-                        </p>
+                                        {{ $s->judul }}
+                                    </p>
 
-                        <p class="text-xs text-gray-400">
-                            {{ $s->genres->pluck('nama_genre')->join(', ') }}
-                        </p>
+                                    <p class="text-xs text-gray-400">
+                                        {{ $s->genres->pluck('nama_genre')->join(', ') }}
+                                    </p>
 
-                    </a>
-                @endif
-            @endforeach
-        </div>
+                                </a>
+                            @endif
+                        @endforeach
+                    </div>
 
-    </div>
-@endif
+                </div>
+            @endif
 
 
 
@@ -298,64 +327,62 @@
 @endsection
 
 @push('scripts')
-  <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const stars = document.querySelectorAll('.stars');
-    const avgText = document.getElementById('avg-rating');
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const stars = document.querySelectorAll('.stars');
+            const avgText = document.getElementById('avg-rating');
 
-    const isLoggedIn = {{ auth()->check() ? 'true' : 'false' }};
-    const userRating = {{ $userRating ?? 'null' }}; // ⭐ rating user
+            const isLoggedIn = {{ auth()->check() ? 'true' : 'false' }};
+            const userRating = {{ $userRating ?? 'null' }}; // ⭐ rating user
 
-    // ⬅⬅⬅ BAGIAN UNTUK MENYALAKAN BINTANG SAAT RELOAD
-    if (userRating) {
-        stars.forEach(s => {
-            const val = s.dataset.star;
-            s.querySelector('path').setAttribute(
-                'fill',
-                val <= userRating ? '#fffe3b' : '#fff'
-            );
-        });
-    }
-    // ⬅⬅⬅ SAMPAI SINI
-
-    stars.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const rating = this.dataset.star;
-
-            if (!isLoggedIn) {
-                window.location.href = "{{ route('login') }}";
-                return;
+            // ⬅⬅⬅ BAGIAN UNTUK MENYALAKAN BINTANG SAAT RELOAD
+            if (userRating) {
+                stars.forEach(s => {
+                    const val = s.dataset.star;
+                    s.querySelector('path').setAttribute(
+                        'fill',
+                        val <= userRating ? '#fffe3b' : '#fff'
+                    );
+                });
             }
+            // ⬅⬅⬅ SAMPAI SINI
 
-            // update tampilan bintang
-            stars.forEach(s => {
-                const val = s.dataset.star;
-                s.querySelector('path').setAttribute(
-                    'fill',
-                    val <= rating ? '#fffe3b' : '#fff'
-                );
-            });
+            stars.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const rating = this.dataset.star;
 
-            // kirim rating ke backend
-            fetch("{{ route('rating.store') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                },
-                body: JSON.stringify({
-                    id_film: {{ $film->id }},
-                    nilai_rating: rating
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                avgText.innerText = `(${data.average.toFixed(1)})`;
+                    if (!isLoggedIn) {
+                        window.location.href = "{{ route('login') }}";
+                        return;
+                    }
+
+                    // update tampilan bintang
+                    stars.forEach(s => {
+                        const val = s.dataset.star;
+                        s.querySelector('path').setAttribute(
+                            'fill',
+                            val <= rating ? '#fffe3b' : '#fff'
+                        );
+                    });
+
+                    // kirim rating ke backend
+                    fetch("{{ route('rating.store') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify({
+                                id_film: {{ $film->id }},
+                                nilai_rating: rating
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            avgText.innerText = `(${data.average.toFixed(1)})`;
+                        });
+                });
             });
         });
-    });
-});
-</script>
-
-
+    </script>
 @endpush

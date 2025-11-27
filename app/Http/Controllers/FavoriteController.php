@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Auth;
 
 class FavoriteController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index()
     {
         $favorites = Favorite::where('id_user', Auth::id())
@@ -38,5 +43,19 @@ class FavoriteController extends Controller
             ]);
             return response()->json(['favorite' => true]);
         }
+    }
+
+    public function remove($id)
+    {
+        $fav = Favorite::findOrFail($id);
+
+        // pastikan user hanya bisa hapus favorit miliknya
+        if ($fav->id_user != auth()->id()) {
+            abort(403, 'Tidak punya izin.');
+        }
+
+        $fav->delete();
+
+        return back()->with('success', 'Berhasil dihapus dari favorit.');
     }
 }
